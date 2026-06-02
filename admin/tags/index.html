@@ -1,0 +1,1613 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-tyx6x2na> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>
+	/* Theme — anti-flicker: применяет тему ДО первой отрисовки.
+	   Приоритет: явный выбор юзера (localStorage) > системная prefers-color-scheme.
+	   Если юзер ничего не нажимал — следуем за OS-настройкой и реагируем на её
+	   изменения (для тех у кого macOS автоматически переключает по времени суток). */
+	(() => {
+		try {
+			const stored = localStorage.getItem('theme');
+			const mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+
+			function apply(isDark) {
+				if (isDark) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+				} else {
+					document.documentElement.removeAttribute('data-theme');
+				}
+			}
+
+			if (stored === 'dark') apply(true);
+			else if (stored === 'light') apply(false);
+			else if (mq && mq.matches) apply(true);
+
+			/* Слушаем смену OS-темы — но только если юзер сам не выбрал.
+			   Manual override wins; иначе следуем за системой live. */
+			if (mq && mq.addEventListener) {
+				mq.addEventListener('change', (e) => {
+					if (localStorage.getItem('theme')) return;
+					apply(e.matches);
+					window.dispatchEvent(new CustomEvent('themechange'));
+				});
+			}
+		} catch (e) {}
+	})();
+</script><link rel="preconnect" href="https://mc.yandex.ru" crossorigin><link rel="preconnect" href="https://gc.zgo.at" crossorigin><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png"><link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Вова Луценко" href="https://piofant.github.io/rss.xml"><meta name="generator" content="Astro v6.1.9"><style>@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/f0d2636ced4e1a21.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ef6e5cba50d6d29c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c254d9c96439e12.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/f0d2636ced4e1a21.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ef6e5cba50d6d29c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c254d9c96439e12.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/8008be2b396de33c.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c5d8c6f4c8b7254.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ea9ca6af40cb9c59.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/8008be2b396de33c.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c5d8c6f4c8b7254.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ea9ca6af40cb9c59.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}:root{--font-body:Literata-6d77f9c5cbce91ff,"Literata-6d77f9c5cbce91ff fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/f0d2636ced4e1a21.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/ef6e5cba50d6d29c.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/2c254d9c96439e12.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/8008be2b396de33c.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/2c5d8c6f4c8b7254.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/ea9ca6af40cb9c59.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}:root{--font-ui:Inter-7f01982f8412ec37,"Inter-7f01982f8412ec37 fallback: Arial",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;}</style><style>@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/7a853453d0b804b9.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/4ad86fbd642890a4.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/77d22454585b10d8.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/7a853453d0b804b9.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/4ad86fbd642890a4.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/77d22454585b10d8.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}:root{--font-heading:"Wix Madefor Display-1d7d413588e9f66d","Wix Madefor Display-1d7d413588e9f66d fallback: Arial",Helvetica,Arial,sans-serif;}</style><link rel="preload" href="/_astro/fonts/7a853453d0b804b9.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/4ad86fbd642890a4.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/77d22454585b10d8.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/e51da4f905618221.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/b247e2262a34a0c3.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/e51da4f905618221.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/b247e2262a34a0c3.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/99b727706435bdaf.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/00b5bb498060bc63.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/99b727706435bdaf.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/00b5bb498060bc63.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}:root{--font-brand:"Cormorant Garamond-5be03736256fea3c","Cormorant Garamond-5be03736256fea3c fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/e51da4f905618221.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/b247e2262a34a0c3.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/99b727706435bdaf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/00b5bb498060bc63.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/4e70e8c5237c7933.woff2") format("woff2");font-display:swap;unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/84b55459df4504de.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/3b7ade51cdd590c1.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/d815aca08ef017da.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}:root{--font-hero:Forum-596467cc0a762b48,"Forum-596467cc0a762b48 fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/4e70e8c5237c7933.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/84b55459df4504de.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/3b7ade51cdd590c1.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/d815aca08ef017da.woff2" as="font" type="font/woff2" crossorigin><link rel="canonical" href="https://piofant.github.io/admin/tags/"><title>admin · tags | Вова Луценко</title><meta name="title" content="admin · tags | Вова Луценко"><meta name="description" content="админка постов и тегов"><meta property="og:type" content="website"><meta property="og:url" content="https://piofant.github.io/admin/tags/"><meta property="og:title" content="admin · tags"><meta property="og:description" content="админка постов и тегов"><meta property="og:site_name" content="Вова Луценко"><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://piofant.github.io/admin/tags/"><meta property="twitter:title" content="admin · tags"><meta property="twitter:description" content="админка постов и тегов"><meta name="copyright" content="© Вова Луценко — All Rights Reserved"><meta name="rights" content="All Rights Reserved"><meta name="robots" content="index, follow, noai, noimageai"><meta name="googlebot" content="index, follow"><meta name="ChatGPT-User" content="noindex"><meta name="GPTBot" content="noindex"><meta name="ClaudeBot" content="noindex"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Вова Луценко","url":"https://piofant.github.io/","description":"разработчик в прошлом, ai-продакт и танцор в настоящем, maybe актёр в будущем","sameAs":["https://t.me/piofant","https://t.me/pioblog"]}</script><script data-goatcounter="https://piofant.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script>
+		(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+		m[i].l=1*new Date();
+		for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+		k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+		(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=109129309', 'ym');
+		ym(109129309, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
+	</script><meta name="robots" content="noindex,nofollow"><style>:root{color-scheme:light;--bg: #ffffff;--bg-navbar: #ffffff;--bg-elevated: #ffffff;--text: #333333;--text-dark: #111111;--muted: #666666;--muted-2: #999999;--border: #e8e8e8;--border-soft: #f4f4f4;--link: #FF4200;--link-hover: #FF8c00;--shadow-sm: rgba(0, 0, 0, .06);--shadow-md: rgba(0, 0, 0, .12);--code-bg: #f2f2f2;--invert: 0;--graph-text: #222;--graph-text-bg: rgba(255, 255, 255, .85);--graph-link: rgba(120, 120, 120, .45);--graph-link-strong: rgba(255, 102, 51, .8);--col-narrow: 620px;--col-feed: 680px}:root[data-theme=dark]{color-scheme:dark;--bg: #0d0d0e;--bg-navbar: #16161a;--bg-elevated: #1d1d22;--text: #b8b8b8;--text-dark: #e0e0e0;--muted: #7a7a7a;--muted-2: #555555;--border: #2a2a2e;--border-soft: #1a1a1e;--link: #ff6633;--link-hover: #ff9b66;--shadow-sm: rgba(0, 0, 0, .4);--shadow-md: rgba(0, 0, 0, .6);--code-bg: #1f1f23;--invert: 1;--graph-text: #d4d4d4;--graph-text-bg: rgba(28, 28, 32, .85);--graph-link: rgba(180, 180, 180, .35);--graph-link-strong: rgba(255, 155, 102, .85)}*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:var(--font-body),Georgia,serif;font-size:1rem;line-height:1.6;word-wrap:break-word;overflow-wrap:break-word}.projects-page,.projects-page p,.projects-page li,.projects-page span,.projects-page a,.projects-page button{font-family:var(--font-ui),system-ui,-apple-system,BlinkMacSystemFont,sans-serif}a{color:var(--link);text-decoration:none}a:hover{color:var(--link-hover)}h1,h2,h3,h4,h5,h6{font-family:var(--font-heading),"Wix Madefor Display","Open Sans",sans-serif;color:var(--text-dark);line-height:1.2;font-weight:700;margin:0 0 .5em}h1{font-size:2rem}h2{font-size:1.625rem;margin-top:2rem}h3{font-size:1.375rem;margin-top:1.75rem}img{max-width:100%;height:auto}blockquote{margin:1.25rem 0;padding:0 1rem;border-left:3px solid var(--border);color:var(--muted);font-style:italic}blockquote p{margin:.5rem 0}code{background:var(--code-bg);padding:1px 4px;border-radius:3px;font-size:.9em}pre{background:var(--border-soft);border:1px solid var(--border);border-radius:2px;padding:14px 16px;overflow-x:auto;font-size:.9rem;line-height:1.5}pre code{background:none;padding:0}hr{border:0;border-top:1px solid var(--border);margin:2rem 0}main.content{max-width:var(--col-narrow);margin:0 auto;padding:2rem 1rem 4rem}main.feed{max-width:var(--col-feed);margin:0 auto;padding:2rem 1rem 4rem}.home-hero{text-align:center;padding:2.5rem 1rem 1.5rem;max-width:var(--col-feed);margin:0 auto;position:relative}.home-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:1rem}.home-title{font-family:var(--font-hero),"Forum",Georgia,serif;font-size:2.5rem;letter-spacing:-.005em;margin:0 0 .5rem;color:var(--text-dark);font-weight:700}.home-subtitle{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto}.home-hero+.feed{padding-top:1rem}@media(max-width:640px){.home-hero{padding:1.5rem 1rem .75rem}.home-title{font-size:2rem}.home-avatar{width:76px;height:76px}.home-subtitle{font-size:.9375rem}:root{--col-narrow: 560px}main.content{padding:1.25rem 1.25rem 5rem}main.feed{padding-bottom:5rem}.post-content{font-size:.9375rem;line-height:1.55}.post-content p{margin:0 0 14px}.post-header h1{font-size:1.625rem}.post-content h2{font-size:1.375rem}.post-content h3{font-size:1.1875rem}}.bottom-nav{display:none}@media(max-width:640px){.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--bg-navbar) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:6px 4px max(14px,env(safe-area-inset-bottom));font-family:var(--font-ui),system-ui,sans-serif}.bottom-nav .btab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;color:var(--muted);text-decoration:none;font-size:.66rem;font-weight:600;transition:color .15s;background:none;border:0;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bottom-nav .btab .lbl{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}.bottom-nav .btab .ico{font-size:1.18rem;line-height:1;filter:grayscale(.4);transition:filter .15s,transform .15s}.bottom-nav .btab:hover,.bottom-nav .btab.active{color:var(--text-dark)}.bottom-nav .btab.active .ico{filter:grayscale(0);transform:scale(1.1)}:root[data-theme=dark] .bottom-nav{background:color-mix(in srgb,var(--bg-navbar) 88%,transparent)}.bsheet-overlay{position:fixed;inset:0;z-index:60;background:#00000073;backdrop-filter:blur(2px);opacity:0;transition:opacity .24s ease;pointer-events:none}.bsheet-overlay[open-now]{opacity:1;pointer-events:auto}.bsheet-overlay[hidden]{display:none!important}.bsheet{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--bg-elevated);border-top:1px solid var(--border);border-radius:16px 16px 0 0;padding:8px 18px max(20px,env(safe-area-inset-bottom));font-family:var(--font-ui),system-ui,sans-serif;transform:translateY(100%);transition:transform .28s ease;box-shadow:0 -10px 32px #0000002e}.bsheet[open-now]{transform:translateY(0)}.bsheet[hidden]{display:none!important}.bsheet-handle{width:38px;height:4px;border-radius:999px;background:var(--border);margin:4px auto 12px;cursor:pointer}.bsheet h3{margin:0 0 8px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--font-ui),system-ui,sans-serif}.bsheet a{display:block;padding:13px 4px;color:var(--text-dark);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border-soft);transition:color .15s}.bsheet a:last-child{border-bottom:0}.bsheet a:active{color:var(--link)}}.hidden-link{color:inherit;text-decoration:none;border-bottom:1px dashed transparent;transition:color .15s ease,border-color .15s ease}.hidden-link:hover{color:var(--link);border-bottom-color:var(--link)}.random-post{position:relative;display:flex;flex-direction:column;max-width:560px;margin:.5rem auto .25rem;padding:.7rem 2.75rem .7rem .85rem;border:1px dashed var(--border);border-radius:8px;background:var(--bg-elevated);overflow:hidden;text-decoration:none;color:var(--text);font-family:var(--font-ui),system-ui,sans-serif;transition:border-color .15s ease,background .15s ease}.random-post .head{display:flex;gap:.85rem;align-items:flex-start}.random-post:before{content:"";position:absolute;left:0;bottom:0;right:0;height:0%;background:color-mix(in srgb,#4a9eff 12%,transparent);animation:random-post-fill var(--rotate-ms, 8s) linear 1 forwards;opacity:0;transition:opacity .4s ease;pointer-events:none;z-index:0}.random-post.idle:before{opacity:1}@keyframes random-post-fill{0%{height:0%}to{height:100%}}.random-post:hover:before,.random-post.paused:before{animation-play-state:paused}.random-post.fill-reset:before{animation:none}.random-post .head,.random-post .quote,.random-post .thumb,.random-post .body{z-index:1;position:relative}.random-post .reroll{z-index:2}.random-post:hover{border-style:solid;border-color:#4a9eff}.random-post .thumb{flex:0 0 56px;width:56px;height:56px;border-radius:6px;background:var(--border-soft);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--muted)}.random-post .thumb.has-image{background-color:var(--border-soft)}.random-post .body{flex:1;min-width:0}.random-post .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-2);margin-bottom:2px;font-weight:600}.random-post .reroll{position:absolute;top:8px;right:8px;background:var(--border-soft);border:1px solid var(--border);cursor:pointer;font-size:1.125rem;color:var(--muted);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1;padding:0;transition:color .15s,background .15s,border-color .15s,transform .3s}.random-post .reroll:hover{color:#fff;background:#4a9eff;border-color:#4a9eff;transform:rotate(180deg)}.random-post .ttl{color:var(--text-dark);font-weight:600;font-size:1rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.random-post .meta{color:var(--muted);font-size:.8125rem;margin-top:2px}.random-post .quote{margin:10px 0 0;padding:4px 0 4px 12px;border-left:3px solid color-mix(in srgb,#4a9eff 45%,transparent);font-family:var(--font-quote),Lora,Georgia,serif;font-style:italic;font-size:.8125rem;color:var(--text);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2;overflow:hidden}.random-post .quote[hidden]{display:none}.random-post .thumb,.random-post .ttl,.random-post .meta,.random-post .quote{transition:opacity .22s ease,transform .22s ease}.random-post.rotating .thumb,.random-post.rotating .ttl,.random-post.rotating .meta,.random-post.rotating .quote{opacity:0;transform:translateY(-3px)}@media(max-width:640px){.random-post{max-width:calc(100% - 1.5rem);margin:.4rem .75rem .25rem;padding:.55rem 2.5rem .55rem .7rem}.random-post .head{gap:.6rem}.random-post .thumb{width:48px;height:48px;flex-basis:48px;font-size:1.35rem}.random-post .reroll{width:26px;height:26px;font-size:1rem;top:6px;right:6px}.random-post .ttl{font-size:.9375rem}.random-post .meta{font-size:.75rem}.random-post .quote{margin-top:8px;padding-left:10px;border-left-width:2px;font-size:.75rem;line-height:1.45}}.site-header{position:sticky;top:0;z-index:100;background:var(--bg-navbar);border-bottom:1px solid var(--border);padding:.875rem 1.25rem;font-family:var(--font-brand),"PT Sans",system-ui,sans-serif;transition:padding .4s ease-in-out,box-shadow .4s ease-in-out}.site-header.scrolled{padding:.4rem 1.25rem;box-shadow:0 2px 8px #0000000f}.site-header .inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1rem}.site-header .brand{display:flex;align-items:center;gap:10px;color:var(--text-dark);text-decoration:none}.site-header .brand span{font-weight:800;font-size:1.34375rem;letter-spacing:-.01em}.site-header .brand img{width:30px;height:30px;border-radius:50%;transition:width .4s ease-in-out,height .4s ease-in-out}.site-header.scrolled .brand img{width:24px;height:24px}.site-header nav{margin-left:auto;display:flex;gap:18px;align-items:center}@media(max-width:760px){.site-header{padding:.6rem .85rem}.site-header .inner{flex-wrap:wrap;gap:.4rem .6rem;align-items:center}.site-header .brand span{font-size:1.05rem}.site-header .brand img{width:26px;height:26px}.site-header nav>a,.site-header nav .nav-dd{display:none}.site-header nav{margin-left:auto;display:flex;gap:4px}.site-header nav .search-btn,.site-header nav .theme-toggle{padding:4px 6px;flex-shrink:0}.search-btn,.theme-toggle{margin-left:0}}.site-header nav>a,.site-header nav .nav-dd-trigger{color:var(--text);font-size:.9375rem;text-transform:uppercase;letter-spacing:.04em;font-weight:600;background:none;border:0;cursor:pointer;font-family:inherit;padding:0;line-height:1}.site-header nav>a:hover,.site-header nav .nav-dd-trigger:hover{color:var(--link-hover)}.site-header nav .nav-dd{position:relative}.site-header nav .nav-dd-trigger:after{content:none}.site-header nav .nav-dd:hover .nav-dd-trigger,.site-header nav .nav-dd.tap-open .nav-dd-trigger{color:var(--link-hover)}.site-header nav .nav-dd-menu{position:absolute;top:100%;left:50%;transform:translate(-50%);margin-top:.4rem;min-width:200px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 24px #00000014;padding:.3rem 0;display:none;z-index:50;font-family:var(--font-ui),system-ui,sans-serif}.site-header nav .nav-dd-menu:before{content:"";position:absolute;top:-.5rem;left:0;right:0;height:.5rem}.site-header nav .nav-dd:hover .nav-dd-menu,.site-header nav .nav-dd.tap-open .nav-dd-menu{display:block}.site-header nav .nav-dd-menu a{display:block;padding:.4rem .9rem;color:var(--text);text-transform:none;letter-spacing:0;font-weight:500;font-size:.875rem;white-space:nowrap;transition:background .12s,color .12s}.site-header nav .nav-dd-menu a .ico{display:inline-block;width:1.25em;margin-right:.4em;text-align:center;opacity:.85}.bsheet a .ico{display:inline-block;width:1.4em;margin-right:.5em;text-align:center;opacity:.85}.site-header nav .nav-dd-menu a.external:after{content:" ↗";color:var(--muted-2);font-size:.85em}.site-header nav .nav-dd-menu a:hover{background:var(--border-soft);color:var(--text-dark)}.site-header nav .nav-dd-menu a.external:hover:after{color:var(--link)}@media(max-width:760px){.site-header nav .nav-dd-menu{left:0;right:auto;transform:none;min-width:180px;max-width:calc(100vw - 24px)}.site-header nav .nav-dd:nth-of-type(2) .nav-dd-menu{left:auto;right:0}}.site-footer{background:var(--bg-navbar);border-top:1px solid var(--border);padding:1.5rem 1rem;text-align:center;color:var(--muted);font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem;margin-top:1.25rem}.site-footer a{color:var(--text);margin:0 .5rem}.posts-list{list-style:none;padding:0;margin:0}.post-card{display:grid;grid-template-columns:minmax(0,1fr) 7rem;column-gap:1rem;row-gap:4px;align-items:start;padding:1.75rem 0;border-bottom:1px solid color-mix(in srgb,var(--text-dark) 18%,transparent)}.post-card:last-child{border-bottom:0}.post-card>*{grid-column:1;min-width:0}.post-card .card-date{grid-row:1}.post-card .card-link{grid-row:2}.post-card .card-excerpt{grid-row:3}.post-card .card-image{grid-column:2;grid-row:1 / span 3;width:7rem;height:7rem;align-self:start;border-radius:2px;overflow:hidden;background:var(--border-soft);display:block}.post-card .card-image img{width:100%;height:100%;object-fit:cover;display:block}.post-card .card-date{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted-2);font-size:.8125rem;margin:0}.post-card .card-link{color:var(--text-dark);font-family:var(--font-body),Georgia,serif;font-weight:700;font-size:1.25rem;line-height:1.25;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.post-card .card-link:hover{color:var(--link-hover)}.post-card .card-sub{font-family:var(--font-body),Georgia,serif;color:var(--muted);font-weight:400;font-size:.9375rem;margin:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.post-card .card-excerpt{font-family:var(--font-body),Georgia,serif;font-size:.9375rem;color:var(--text);line-height:1.55;margin:6px 0 0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}@media(max-width:640px){.post-card{grid-template-columns:1fr}.post-card .card-image{grid-column:1;grid-row:1;width:100%;height:10rem;margin-bottom:.5rem}.post-card .card-date{grid-row:2}.post-card .card-link{grid-row:3}.post-card .card-excerpt{grid-row:4}}.all-posts-link{margin-top:1.5rem;font-family:var(--font-ui),system-ui,sans-serif;font-size:.9375rem}.post-header{margin-bottom:1.5rem}.post-header h1{font-size:2rem;margin:0 0 .4rem;line-height:1.15}.post-header .post-date{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted-2);font-size:.8125rem;margin:0 0 .6rem}.post-header .post-subtitle{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted);font-size:1rem;font-weight:400;margin:0 0 1rem}.post-header .post-hero{margin:1.5rem 0;border-radius:3px;overflow:hidden}.post-header .post-hero img{display:block;width:100%}.post-tags{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 1.5rem;font-family:var(--font-ui),system-ui,sans-serif}.post-tags a{font-size:12px;padding:2px 10px;border:1px solid var(--text-dark);color:var(--text-dark);border-radius:999px;text-decoration:none}.post-tags a:hover{background:var(--text-dark);color:var(--bg)}.post-content p{margin:0 0 15px}.post-content ul,.post-content ol{margin:.4em 0 1em;padding-left:1.5em}.post-content li{margin:.15em 0}.series-nav{margin:0 0 1.75rem;padding:.85rem 1rem;border:1px solid var(--border);border-radius:6px;font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem;display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}.series-nav .name{font-weight:600;color:var(--text-dark)}.series-nav .pills{display:flex;gap:.4rem;flex-wrap:wrap}.series-nav .pill{display:inline-flex;align-items:center;justify-content:center;min-width:1.6rem;padding:.15rem .55rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.8125rem;background:var(--bg);text-decoration:none}.series-nav a.pill:hover{border-color:var(--text-dark);color:var(--text-dark)}.series-nav .pill.current{background:var(--text-dark);color:var(--bg);border-color:var(--text-dark);font-weight:600}.series-cta{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:2.5rem 0 0;padding:1rem 1.2rem;background:var(--bg-elevated);color:var(--text);border:1px solid var(--border);border-radius:4px;font-family:var(--font-ui),system-ui,sans-serif;text-decoration:none;transition:background .15s ease,color .15s ease,border-color .15s ease}.series-cta:hover{background:var(--link);color:#fff;border-color:var(--link)}.series-cta:hover .lbl,.series-cta:hover .arrow{color:#fff}.series-cta .arrow{color:var(--link)}.series-cta .lbl{font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:.2rem}.series-cta .ttl{font-size:1rem;font-weight:600;line-height:1.3}.series-cta .arrow{font-size:1.5rem;flex-shrink:0;line-height:1}.mini-graph-wrap{margin-top:2rem;font-family:var(--font-ui),system-ui,sans-serif}.mini-graph-wrap .post-actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}.mini-graph-wrap .tg-pill{font-size:.9375rem;font-weight:500;color:var(--text);text-decoration:none;cursor:pointer;padding:.55rem .9rem;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}.mini-graph-wrap .tg-pill:hover{background:var(--bg);border-color:#229ed9;color:#229ed9;transform:translateY(-1px)}:root[data-theme=dark] .mini-graph-wrap .tg-pill:hover{border-color:#4ab9ea;color:#4ab9ea}.mini-graph-wrap .tg-pill svg{flex-shrink:0;color:var(--muted);transition:color .15s ease}.mini-graph-wrap .tg-pill:hover svg{color:inherit}.mini-graph-wrap h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 .75rem}.mini-graph-wrap details{display:inline-block}.mini-graph-wrap details>summary{font-size:.9375rem;color:var(--text);font-weight:500;cursor:pointer;padding:.55rem .9rem;user-select:none;list-style:none;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,transform .15s ease}.mini-graph-wrap details>summary::-webkit-details-marker{display:none}.mini-graph-wrap details>summary:before{content:"▸";font-size:.75rem;color:var(--muted);transition:transform .15s ease;display:inline-block}.mini-graph-wrap details[open]>summary:before{transform:rotate(90deg)}.mini-graph-wrap details>summary:hover{background:var(--bg);border-color:var(--text);transform:translateY(-1px)}.mini-graph-wrap details>summary .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8125rem;background:var(--bg);border:1px solid var(--border);padding:.05rem .45rem;border-radius:999px;margin-left:.15rem}.mini-graph-wrap details[open]>summary{background:transparent;border-color:transparent;padding-left:0}.mini-graph-wrap>.mini-graph{display:none;width:100%;margin-top:.5rem}.mini-graph-wrap:has(.conn-toggle[open])>.mini-graph{display:block}.mini-graph{width:100%;height:280px;background:var(--border-soft);border:1px solid var(--border);border-radius:4px}.related-posts{margin-top:2.5rem;font-family:var(--font-ui),system-ui,sans-serif}.related-posts h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 .75rem}.related-posts ul{list-style:none;padding:0;margin:0}.related-posts li{display:flex;gap:12px;align-items:baseline;padding:6px 0}.related-posts li a{font-size:.9375rem;line-height:1.35;color:var(--link)}.related-posts li .d{color:var(--muted-2);font-size:.75rem;min-width:90px;flex-shrink:0;order:-1}.post-nav{margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-family:var(--font-ui),system-ui,sans-serif}.post-nav-slot{min-width:0}.post-nav-slot a{display:block;padding:.75rem;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);transition:background .15s,border-color .15s}.post-nav-slot a:hover{background:var(--border-soft);border-color:var(--muted);color:var(--text-dark)}.post-nav-slot.next{text-align:right}.post-nav-slot .dir{display:block;font-size:.75rem;color:var(--muted-2);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em}.post-nav-slot .t{display:block;font-size:.875rem;line-height:1.35;color:var(--text-dark)}@media(max-width:560px){.post-nav{grid-template-columns:1fr}}.pagination{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem}.pagination a{padding:6px 12px;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--link)}.pagination a:hover{background:var(--border-soft);color:var(--link-hover)}.pagination .current{color:var(--muted)}.pagination .disabled{color:var(--border);border-color:transparent;cursor:default}.tag-cloud{display:flex;flex-wrap:wrap;gap:10px 14px;margin:1.5rem 0 2rem;line-height:1.4;align-items:baseline}.tag-cloud a{text-decoration:none;color:var(--text-dark);font-family:var(--font-ui),system-ui,sans-serif;font-weight:700;transition:color .15s;white-space:nowrap}.tag-cloud a:hover{color:var(--link)}.tag-cloud a .c{font-weight:400;color:var(--muted-2);font-size:.75em;margin-left:2px}.post-content a{color:var(--link)}.post-content a:hover{color:var(--link-hover)}.wiki-page{font-family:var(--font-ui),"Inter",system-ui,sans-serif;color:var(--text-dark);line-height:1.5}.wiki-page h1{font-family:inherit;font-size:2.25rem;font-weight:800;letter-spacing:-.01em;color:var(--text-dark);line-height:1.2;margin:0 0 1.25rem}.wiki-page .page-content h2,.wiki-page .page-content h3,.wiki-page .page-content h4{font-family:inherit;color:var(--text-dark);font-weight:700;letter-spacing:-.01em;line-height:1.3;margin:1.75rem 0 .4rem}.wiki-page .page-content h2{font-size:1.5rem}.wiki-page .page-content h3{font-size:1.25rem}.wiki-page .page-content h4{font-size:1.0625rem}.wiki-page .page-content h2 strong,.wiki-page .page-content h3 strong{font-weight:700}.wiki-page .page-content p{margin:4px 0 6px}.wiki-page .page-content strong{font-weight:700;color:var(--text-dark)}.wiki-page .page-content a{color:var(--text-dark);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);text-underline-offset:3px;text-decoration-thickness:1px;border:0;transition:text-decoration-color .12s}.wiki-page .page-content a:hover{text-decoration-color:currentColor;color:var(--text-dark)}.wiki-page .page-content blockquote{border-left:3px solid var(--text-dark);padding:0 0 0 14px;margin:.75rem 0;color:var(--text-dark);font-style:normal}.wiki-page .page-content blockquote p{margin:.25rem 0}.wiki-page .page-content hr{border:0;border-top:1px solid var(--border);margin:1.75rem 0}.callout,.wiki-page .callout,.page-content .callout{display:block;padding:14px 16px;margin:14px 0;background:var(--border-soft);color:var(--text-dark);border:0;border-radius:4px;font-size:1rem;line-height:1.5}.callout>*:first-child{margin-top:0}.callout>*:last-child{margin-bottom:0}.callout>p{margin:.4rem 0}.callout>p:first-child{margin-top:0}.callout>p:last-child{margin-bottom:0}.callout.green_background{background:#ddedea;color:#1c3a32}.callout.red_background{background:#fbe4e4;color:#5d1f1f}.callout.yellow_background{background:#fbf3db;color:#4a3c0c}.callout.blue_background{background:#ddebf1;color:#1f3d4f}.callout.orange_background{background:#faebdd;color:#5a3215}.callout.purple_background{background:#eadff5;color:#3d2050}.callout.pink_background{background:#f4dfeb;color:#4d1d3a}.callout.brown_background{background:#eee0da;color:#3d2a1f}.callout.gray_background,.callout.gray_bg{background:#f1f1ef;color:#37352f}:root[data-theme=dark] .callout{background:#2a2a2e;color:var(--text-dark)}:root[data-theme=dark] .callout.green_background{background:#243933;color:#d3eee5}:root[data-theme=dark] .callout.red_background{background:#3a2424;color:#f3d4d4}:root[data-theme=dark] .callout.yellow_background{background:#3b3422;color:#f0e1b3}:root[data-theme=dark] .callout.blue_background{background:#1f3340;color:#cfe2eb}:root[data-theme=dark] .callout.orange_background{background:#3d2a1c;color:#f1d6b4}:root[data-theme=dark] .callout.purple_background{background:#2e2238;color:#ddc8eb}:root[data-theme=dark] .callout.pink_background{background:#392331;color:#ebcde0}:root[data-theme=dark] .callout.brown_background{background:#322821;color:#ddc7b6}:root[data-theme=dark] .callout.gray_background,:root[data-theme=dark] .callout.gray_bg{background:#2a2a2e;color:#e0e0dc}:root[data-theme=dark] .callout a{color:inherit}.wiki-page .page-content details{margin:.4rem 0;border:0;background:transparent;padding:0;border-radius:6px;transition:background .15s,padding .15s}.wiki-page .page-content details[open]{background:var(--border-soft);padding:.55rem .85rem .7rem .45rem;margin:.5rem -.45rem}.wiki-page .page-content summary{cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:.45rem;padding:.15rem 0;font-weight:500;color:var(--text-dark);font-family:inherit}.wiki-page .page-content summary::-webkit-details-marker{display:none}.wiki-page .page-content summary:before{content:"▶";font-size:.7em;color:var(--muted);transition:transform .15s;margin-top:6px;flex-shrink:0}.wiki-page .page-content details[open]>summary:before{transform:rotate(90deg)}.wiki-page .page-content details[open]>summary{padding:.15rem 0 .35rem .5rem;margin-bottom:.2rem}.wiki-page .page-content details>*:not(summary){margin-left:1.5rem;padding-left:0}.wiki-page .page-content details[open]>*:not(summary){margin-left:1.95rem}.post-content details{margin:.75rem 0;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:var(--border-soft)}.post-content details[open]{background:var(--bg-elevated)}.post-content summary{cursor:pointer;font-weight:600;color:var(--text-dark);padding:2px 0;list-style:disclosure-closed;font-family:var(--font-ui),system-ui,sans-serif}.post-content details[open]>summary{list-style:disclosure-open;margin-bottom:6px}.post-content details>:not(summary){padding-left:14px;margin-top:4px}.page-content a[href*="/wiki/cases/"],.page-content details a[href*="/wiki/cases/"]{display:block;padding:10px 14px;margin:6px 0;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text-dark);background:var(--bg-elevated);transition:background .15s}.page-content a[href*="/wiki/cases/"]:before,.page-content details a[href*="/wiki/cases/"]:before{content:"📄 ";margin-right:6px;opacity:.6}.page-content a[href*="/wiki/cases/"]:hover{background:var(--border-soft)}.page-content img{border-radius:4px;margin:1.25rem 0}.page-content h2{font-size:1.375rem}.page-content h3{font-size:1.125rem}.page-content hr{border:0;border-top:1px solid var(--border);margin:2rem 0}.page-content ul,.page-content ol{padding-left:1.5rem}.page-content li{margin:.35rem 0}.page-content blockquote{border-left:3px solid var(--border);margin:1.25rem 0;padding:.25rem 1rem;color:var(--muted);font-style:italic}.archive-page h2{font-family:var(--font-ui),system-ui,sans-serif;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:2rem 0 .5rem;font-weight:700}.archive-page h2:first-child{margin-top:0}.archive-list{list-style:none;padding:0;margin:0}.archive-list li{padding:4px 0;display:flex;gap:12px;align-items:baseline;font-family:var(--font-ui),system-ui,sans-serif}.archive-list .date{color:var(--muted-2);font-size:.8125rem;min-width:110px;flex-shrink:0}.archive-list a{font-size:.9375rem;line-height:1.3}.related-posts .related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:720px){.related-posts .related-grid{grid-template-columns:1fr}}.related-posts .related-card{display:flex;gap:12px;align-items:flex-start;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-elevated);text-decoration:none;color:var(--text);transition:box-shadow .15s ease,border-color .15s ease;min-width:0}.related-posts .related-card:hover{box-shadow:0 4px 14px var(--shadow-sm);border-color:var(--text);color:var(--text)}.related-posts .related-card .thumb{flex:0 0 70px;width:70px;height:70px;border-radius:6px;background-color:var(--border-soft);background-size:cover;background-position:center;background-repeat:no-repeat;display:block}.related-posts .related-card .thumb-fallback{display:flex;align-items:center;justify-content:center;font-family:var(--font-heading),"Wix Madefor Display",sans-serif;font-size:1.75rem;font-weight:700;color:var(--muted);background:linear-gradient(135deg,var(--border-soft) 0%,var(--border) 100%)}.related-posts .related-card .body{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 auto}.related-posts .related-card .ttl{font-family:var(--font-heading),"Wix Madefor Display","Open Sans",sans-serif;font-size:.95rem;line-height:1.3;font-weight:700;color:var(--text-dark);transition:color .15s ease;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.related-posts .related-card:hover .ttl{color:var(--link)}.related-posts .related-card .sub{font-family:var(--font-ui),system-ui,sans-serif;font-size:.8125rem;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.related-posts .related-card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:2px;font-family:var(--font-ui),system-ui,sans-serif;font-size:.72rem;color:var(--muted-2)}.related-posts .related-card .meta .d{color:var(--muted-2)}.related-posts .related-card .tag-pills{display:inline-flex;flex-wrap:wrap;gap:4px}.related-posts .related-card .pill{display:inline-block;padding:1px 7px;border-radius:999px;background:var(--border-soft);color:var(--muted);font-size:.7rem;line-height:1.5;border:1px solid var(--border)}.wiki-related-toggle{display:inline-block}.wiki-related-toggle>summary{font-size:.9375rem;color:var(--text);font-weight:500;cursor:pointer;padding:.55rem .9rem;user-select:none;list-style:none;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,transform .15s ease;font-family:var(--font-ui),system-ui,sans-serif}.wiki-related-toggle>summary::-webkit-details-marker{display:none}.wiki-related-toggle>summary:before{content:"▸";font-size:.75rem;color:var(--muted);transition:transform .15s ease;display:inline-block}.wiki-related-toggle[open]>summary:before{transform:rotate(90deg)}.wiki-related-toggle>summary:hover{background:var(--bg);border-color:var(--text);transform:translateY(-1px)}.wiki-related-toggle>summary .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8125rem;background:var(--bg);border:1px solid var(--border);padding:.05rem .45rem;border-radius:999px;margin-left:.15rem}.wiki-related-toggle[open]>summary{background:transparent;border-color:transparent;padding-left:0}.wiki-related-toggle>.related-grid{margin-top:.75rem}.wiki-related h3{display:none}.post-metrics{display:flex;flex-wrap:wrap;gap:.3rem .7rem;align-items:baseline;margin:1.25rem 0 0;font-family:var(--font-ui),system-ui,sans-serif;font-size:.75rem;font-weight:400;color:var(--muted-2);letter-spacing:.01em}.post-metrics .m{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;color:inherit;text-decoration:none;font-weight:inherit;transition:color .15s}.post-metrics .m:hover{color:var(--text);text-decoration:underline;text-decoration-color:var(--muted-2);text-underline-offset:3px}.post-metrics .sep{color:var(--muted-2);user-select:none;pointer-events:none}.post-content>hr:last-child{display:none}
+body{font-family:var(--font-ui),system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text-dark);max-width:960px;margin:0 auto;padding:16px 16px 96px}h1[data-astro-cid-tyx6x2na],h2[data-astro-cid-tyx6x2na],h3[data-astro-cid-tyx6x2na]{color:var(--text-dark)}.muted[data-astro-cid-tyx6x2na]{color:var(--muted);font-size:.85rem}.row[data-astro-cid-tyx6x2na]{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.hidden[data-astro-cid-tyx6x2na]{display:none!important}.gate[data-astro-cid-tyx6x2na]{border:1px solid var(--border);padding:16px;border-radius:6px;background:var(--bg-elevated);max-width:420px;margin:32px auto}.gate[data-astro-cid-tyx6x2na] h2[data-astro-cid-tyx6x2na]{font-size:1rem;margin:0 0 12px}.gate[data-astro-cid-tyx6x2na] label[data-astro-cid-tyx6x2na]{display:block;font-size:.8rem;color:var(--muted);margin:12px 0 4px}.gate[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na][type=password],.gate[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na][type=text]{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-dark);font:inherit;box-sizing:border-box}.gate[data-astro-cid-tyx6x2na] .err[data-astro-cid-tyx6x2na]{color:#c0392b;font-size:.8rem;margin-top:8px;min-height:1em}button[data-astro-cid-tyx6x2na].primary{background:var(--link);color:#fff;border:0;padding:7px 12px;border-radius:4px;font:inherit;font-size:.85rem;cursor:pointer}button[data-astro-cid-tyx6x2na].primary:hover{background:var(--link-hover)}button[data-astro-cid-tyx6x2na].primary:disabled{background:var(--muted-2);cursor:not-allowed}button[data-astro-cid-tyx6x2na].ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:6px 10px;border-radius:4px;font:inherit;font-size:.85rem;cursor:pointer}button[data-astro-cid-tyx6x2na].ghost:hover{color:var(--text-dark);border-color:var(--text-dark)}button[data-astro-cid-tyx6x2na].ghost.danger:hover{color:#c0392b;border-color:#c0392b}button[data-astro-cid-tyx6x2na].icon{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:.95rem;line-height:1;padding:2px 6px;border-radius:4px}button[data-astro-cid-tyx6x2na].icon:hover{color:#c0392b;background:var(--border-soft)}.topbar[data-astro-cid-tyx6x2na]{position:sticky;top:0;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--border);z-index:10}.topbar-row1[data-astro-cid-tyx6x2na]{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.topbar-row1[data-astro-cid-tyx6x2na] strong[data-astro-cid-tyx6x2na]{font-size:.95rem}.dirty-badge[data-astro-cid-tyx6x2na]{font-size:.8rem;color:var(--muted);padding:2px 8px;border-radius:999px;background:var(--border-soft)}.dirty-badge[data-astro-cid-tyx6x2na].has-dirty{background:#ff420026;color:var(--link)}.refresh-line[data-astro-cid-tyx6x2na]{font-size:.74rem;min-height:1em;margin:0 0 2px}#refresh-status[data-astro-cid-tyx6x2na].syncing{color:var(--link)}#refresh-status[data-astro-cid-tyx6x2na].err{color:#c0392b}.post[data-astro-cid-tyx6x2na].stale{opacity:.55;border-left-color:#c0392b!important}.post[data-astro-cid-tyx6x2na].stale .post-title[data-astro-cid-tyx6x2na]:after{content:" ⟳";color:#c0392b;font-size:.85em}.post-badge-new[data-astro-cid-tyx6x2na]{display:inline-block;font-size:.66rem;padding:0 5px;border-radius:3px;background:#2e8b572e;color:#2e8b57;vertical-align:middle}.post-badge-lazy[data-astro-cid-tyx6x2na]{font-size:.7rem;color:var(--muted);font-style:italic}.tabs[data-astro-cid-tyx6x2na]{display:flex;gap:0;border-bottom:1px solid var(--border);margin-top:4px}.tab[data-astro-cid-tyx6x2na]{background:transparent;border:0;border-bottom:2px solid transparent;padding:8px 16px;font:inherit;font-size:.9rem;color:var(--muted);cursor:pointer;margin-bottom:-1px;letter-spacing:.04em}.tab[data-astro-cid-tyx6x2na]:hover{color:var(--text-dark)}.tab[data-astro-cid-tyx6x2na].active{color:var(--text-dark);border-bottom-color:var(--link);font-weight:600}.search-wrap[data-astro-cid-tyx6x2na]{padding:10px 0}input[data-astro-cid-tyx6x2na].search{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-dark);font:inherit;font-size:.9rem;box-sizing:border-box}input[data-astro-cid-tyx6x2na].search:focus{outline:none;border-color:var(--link)}.global-status[data-astro-cid-tyx6x2na]{font-size:.82rem;color:var(--muted);margin:0 0 8px;min-height:1em}.post[data-astro-cid-tyx6x2na]{border-bottom:1px solid var(--border-soft);padding:10px 8px;cursor:pointer;border-left:3px solid transparent;transition:border-left-color .15s}.post[data-astro-cid-tyx6x2na]:hover{background:var(--border-soft)}.post[data-astro-cid-tyx6x2na].expanded{cursor:default;background:var(--bg-elevated);border-left-color:var(--border)}.post[data-astro-cid-tyx6x2na].dirty{border-left-color:var(--link)}.post-title[data-astro-cid-tyx6x2na]{font-size:.95rem;margin:0 0 3px;color:var(--text-dark);font-weight:500;line-height:1.3}.post-meta[data-astro-cid-tyx6x2na]{font-size:.74rem;color:var(--muted);margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.post-meta[data-astro-cid-tyx6x2na] a[data-astro-cid-tyx6x2na]{color:var(--muted);text-decoration:underline}.post-meta[data-astro-cid-tyx6x2na] a[data-astro-cid-tyx6x2na]:hover{color:var(--link)}.save-status[data-astro-cid-tyx6x2na]{font-size:.78rem}.save-status[data-astro-cid-tyx6x2na].ok{color:#2e8b57}.save-status[data-astro-cid-tyx6x2na].err{color:#c0392b}.save-status[data-astro-cid-tyx6x2na].saving{color:var(--muted)}.editor[data-astro-cid-tyx6x2na]{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}.editor-actions[data-astro-cid-tyx6x2na]{margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.chips[data-astro-cid-tyx6x2na]{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.chip[data-astro-cid-tyx6x2na]{display:inline-flex;align-items:center;gap:3px;background:var(--border-soft);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:.78rem;color:var(--text-dark)}.chip[data-astro-cid-tyx6x2na].compact{padding:2px 6px;font-size:.74rem}.chip[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na]{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:.9rem;line-height:1;padding:0 2px 0 4px;margin-left:2px;border-radius:4px}.chip[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na]:hover{color:#c0392b}.add-input[data-astro-cid-tyx6x2na]{border:1px dashed var(--border);border-radius:4px;padding:3px 8px;font:inherit;font-size:.78rem;background:transparent;color:var(--text-dark);min-width:110px;outline:none}.add-input[data-astro-cid-tyx6x2na]:focus{border-color:var(--link);border-style:solid}.tag-row[data-astro-cid-tyx6x2na]{border-bottom:1px solid var(--border-soft);padding:10px 8px;cursor:pointer}.tag-row[data-astro-cid-tyx6x2na]:hover{background:var(--border-soft)}.tag-row[data-astro-cid-tyx6x2na].expanded{background:var(--bg-elevated);cursor:default}.tag-row-head[data-astro-cid-tyx6x2na]{display:flex;justify-content:space-between;align-items:center;gap:8px}.tag-name[data-astro-cid-tyx6x2na]{font-size:.92rem;color:var(--text-dark);font-weight:500}.tag-name[data-astro-cid-tyx6x2na] .chevron[data-astro-cid-tyx6x2na]{display:inline-block;width:1em;color:var(--muted);margin-right:4px;transition:transform .15s}.tag-row[data-astro-cid-tyx6x2na].expanded .chevron[data-astro-cid-tyx6x2na]{transform:rotate(90deg)}.tag-count[data-astro-cid-tyx6x2na]{font-size:.78rem;color:var(--muted);white-space:nowrap}.tag-panel[data-astro-cid-tyx6x2na]{margin-top:10px;padding:10px 4px 4px;border-top:1px dashed var(--border)}.tag-actions[data-astro-cid-tyx6x2na]{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.rename-form[data-astro-cid-tyx6x2na]{display:flex;gap:6px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.rename-form[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na]{flex:1 1 200px;padding:6px 10px;border:1px solid var(--link);border-radius:4px;background:var(--bg);color:var(--text-dark);font:inherit;font-size:.85rem}.tag-section[data-astro-cid-tyx6x2na]{margin-top:12px}.tag-section[data-astro-cid-tyx6x2na] h4[data-astro-cid-tyx6x2na]{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px;font-weight:600}.tag-section[data-astro-cid-tyx6x2na] h4[data-astro-cid-tyx6x2na] .toggle-arrow[data-astro-cid-tyx6x2na]{display:inline-block;margin-left:6px;font-size:.7rem;color:var(--muted)}.tag-section[data-astro-cid-tyx6x2na] h4[data-astro-cid-tyx6x2na].clickable{cursor:pointer;user-select:none}.tag-section[data-astro-cid-tyx6x2na] h4[data-astro-cid-tyx6x2na].clickable:hover{color:var(--text-dark)}.mini-post[data-astro-cid-tyx6x2na]{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 6px;border-bottom:1px solid var(--border-soft);font-size:.82rem}.mini-post[data-astro-cid-tyx6x2na]:last-child{border-bottom:0}.mini-post[data-astro-cid-tyx6x2na] .mini-title[data-astro-cid-tyx6x2na]{flex:1;color:var(--text-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mini-post[data-astro-cid-tyx6x2na] .mini-title[data-astro-cid-tyx6x2na] a[data-astro-cid-tyx6x2na]{color:var(--text-dark);text-decoration:none}.mini-post[data-astro-cid-tyx6x2na] .mini-title[data-astro-cid-tyx6x2na] a[data-astro-cid-tyx6x2na]:hover{color:var(--link);text-decoration:underline}.mini-post[data-astro-cid-tyx6x2na] .mini-date[data-astro-cid-tyx6x2na]{font-size:.7rem;color:var(--muted);white-space:nowrap}.mini-post[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na]{flex-shrink:0}.subfilter[data-astro-cid-tyx6x2na]{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;background:var(--bg);color:var(--text-dark);font:inherit;font-size:.8rem;margin-bottom:6px;box-sizing:border-box}.batch-progress[data-astro-cid-tyx6x2na]{font-size:.82rem;color:var(--muted);margin-top:8px;min-height:1em}.batch-progress[data-astro-cid-tyx6x2na].ok{color:#2e8b57}.batch-progress[data-astro-cid-tyx6x2na].err{color:#c0392b}.loading-skeleton[data-astro-cid-tyx6x2na]{display:block;padding:32px 12px;text-align:center;color:var(--muted);font-size:.9rem}.loading-skeleton[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]{display:inline-block;width:8px;height:8px;margin:0 3px;border-radius:50%;background:var(--muted);opacity:.3;animation:skeleton-pulse 1.2s infinite ease-in-out}.loading-skeleton[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]:nth-child(2){animation-delay:.2s}.loading-skeleton[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]:nth-child(3){animation-delay:.4s}@keyframes skeleton-pulse{0%,80%,to{opacity:.3}40%{opacity:1}}body.ready .loading-skeleton[data-astro-cid-tyx6x2na]{display:none}body:not(.ready) #gate-pw-real[data-astro-cid-tyx6x2na],body:not(.ready) #gate-pat[data-astro-cid-tyx6x2na],body:not(.ready) #app[data-astro-cid-tyx6x2na]{display:none!important}.post-head[data-astro-cid-tyx6x2na]{display:flex;align-items:flex-start;gap:10px}.post-cb-wrap[data-astro-cid-tyx6x2na]{flex-shrink:0;padding-top:2px;display:flex;align-items:center}.post-cb[data-astro-cid-tyx6x2na]{width:16px;height:16px;cursor:pointer;accent-color:var(--link)}.post-body[data-astro-cid-tyx6x2na]{flex:1 1 auto;min-width:0}.bulk-bar[data-astro-cid-tyx6x2na]{position:fixed;left:0;right:0;bottom:0;background:var(--bg-elevated);border-top:1px solid var(--border);padding:10px 16px;box-shadow:0 -2px 12px #00000014;z-index:20;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}.bulk-bar[data-astro-cid-tyx6x2na] .bulk-count[data-astro-cid-tyx6x2na]{font-size:.88rem;color:var(--text-dark);font-weight:500}.bulk-bar[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na][type=text]{padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text-dark);font:inherit;font-size:.85rem;min-width:180px;flex:1 1 200px;max-width:320px}.bulk-bar[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na][type=text]:focus{outline:none;border-color:var(--link)}.bulk-bar[data-astro-cid-tyx6x2na] .bulk-status[data-astro-cid-tyx6x2na]{font-size:.82rem;color:var(--muted);min-width:60px}.bulk-bar[data-astro-cid-tyx6x2na] .bulk-status[data-astro-cid-tyx6x2na].ok{color:#2e8b57}.bulk-bar[data-astro-cid-tyx6x2na] .bulk-status[data-astro-cid-tyx6x2na].err{color:#c0392b}.filter-chips[data-astro-cid-tyx6x2na]{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0 6px}.filter-chips[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na]{background:transparent;border:1px solid var(--border);border-radius:999px;padding:3px 10px;font:inherit;font-size:.78rem;color:var(--muted);cursor:pointer}.filter-chips[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na]:hover{color:var(--text-dark);border-color:var(--text-dark)}.filter-chips[data-astro-cid-tyx6x2na] button[data-astro-cid-tyx6x2na].active{background:var(--link);color:#fff;border-color:var(--link)}.quick-add-bar[data-astro-cid-tyx6x2na]{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:.74rem}.quick-add-bar[data-astro-cid-tyx6x2na] .qa-label[data-astro-cid-tyx6x2na]{color:var(--muted);font-size:.74rem;margin-right:4px}.quick-add-chip[data-astro-cid-tyx6x2na]{background:transparent;border:1px dashed var(--border);border-radius:4px;padding:2px 7px;font:inherit;font-size:.74rem;color:var(--text-dark);cursor:pointer}.quick-add-chip[data-astro-cid-tyx6x2na]:hover{border-style:solid;border-color:var(--link);color:var(--link)}.quick-add-chip[data-astro-cid-tyx6x2na].dim{opacity:.35;cursor:not-allowed}.quick-add-chip[data-astro-cid-tyx6x2na].dim:hover{border-color:var(--border);border-style:dashed;color:var(--text-dark)}.modal-overlay[data-astro-cid-tyx6x2na]{position:fixed;inset:0;background:#00000073;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}.modal[data-astro-cid-tyx6x2na]{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:16px 18px;max-width:480px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 6px 24px #0003}.modal[data-astro-cid-tyx6x2na] h3[data-astro-cid-tyx6x2na]{margin:0 0 10px;font-size:.95rem;color:var(--text-dark)}.modal[data-astro-cid-tyx6x2na] .modal-list[data-astro-cid-tyx6x2na]{overflow-y:auto;flex:1 1 auto;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);padding:6px 0;margin:6px 0 12px;font-size:.82rem}.modal[data-astro-cid-tyx6x2na] .modal-list[data-astro-cid-tyx6x2na] .mtitle[data-astro-cid-tyx6x2na]{padding:3px 0;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.modal[data-astro-cid-tyx6x2na] .modal-list[data-astro-cid-tyx6x2na] .more[data-astro-cid-tyx6x2na]{color:var(--muted);font-size:.78rem;padding-top:6px}.modal-actions[data-astro-cid-tyx6x2na]{display:flex;justify-content:flex-end;gap:8px}.pat-refresh-inline[data-astro-cid-tyx6x2na]{margin-left:6px;font-size:.74rem;padding:1px 6px;border:1px solid #c0392b;color:#c0392b;background:transparent;border-radius:3px;cursor:pointer}.pat-refresh-inline[data-astro-cid-tyx6x2na]:hover{background:#c0392b1a}.gate[data-astro-cid-tyx6x2na] .checking[data-astro-cid-tyx6x2na]{display:inline-block;color:var(--muted);font-size:.82rem;margin-top:8px}.gate[data-astro-cid-tyx6x2na] .checking[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:var(--muted);opacity:.3;animation:skeleton-pulse 1.2s infinite ease-in-out}.gate[data-astro-cid-tyx6x2na] .checking[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]:nth-child(2){animation-delay:.2s}.gate[data-astro-cid-tyx6x2na] .checking[data-astro-cid-tyx6x2na] .dot[data-astro-cid-tyx6x2na]:nth-child(3){animation-delay:.4s}@media(max-width:640px){body{padding:12px 10px 80px}.tab[data-astro-cid-tyx6x2na]{padding:8px 10px;font-size:.82rem}.topbar-row1[data-astro-cid-tyx6x2na] strong[data-astro-cid-tyx6x2na]{font-size:.85rem}.bulk-bar[data-astro-cid-tyx6x2na]{padding:8px 10px;gap:6px}.bulk-bar[data-astro-cid-tyx6x2na] input[data-astro-cid-tyx6x2na][type=text]{min-width:140px}}
+</style></head> <body data-astro-cid-tyx6x2na> <!-- ============ Pre-JS loading skeleton ============ --> <div class="loading-skeleton" id="loading-skeleton" data-astro-cid-tyx6x2na> <div data-astro-cid-tyx6x2na> <span class="dot" data-astro-cid-tyx6x2na></span><span class="dot" data-astro-cid-tyx6x2na></span><span class="dot" data-astro-cid-tyx6x2na></span> </div> <div style="margin-top:10px;" data-astro-cid-tyx6x2na>загрузка…</div> </div> <!-- ============ Gates ============ --> <section class="gate hidden" id="gate-pw-real" data-astro-cid-tyx6x2na> <h2 data-astro-cid-tyx6x2na>пароль</h2> <p class="muted" data-astro-cid-tyx6x2na>это персональная админка. без пароля и PAT — никуда.</p> <label for="pw" data-astro-cid-tyx6x2na>пароль</label> <input id="pw" type="password" autocomplete="current-password" data-astro-cid-tyx6x2na> <div class="err" id="pw-err" data-astro-cid-tyx6x2na></div> <div class="row" style="margin-top:12px; justify-content:flex-end;" data-astro-cid-tyx6x2na> <button class="primary" id="pw-btn" type="button" data-astro-cid-tyx6x2na>войти</button> </div> </section> <section class="gate hidden" id="gate-pat" data-astro-cid-tyx6x2na> <h2 data-astro-cid-tyx6x2na>github personal access token</h2> <p class="muted" data-astro-cid-tyx6x2na>
+PAT (classic или fine-grained) со scope <code data-astro-cid-tyx6x2na>repo</code> или
+				contents:write на <code data-astro-cid-tyx6x2na>piofant/pioblog-source</code>. сохраню в localStorage.
+</p> <label for="pat" data-astro-cid-tyx6x2na>PAT</label> <input id="pat" type="password" autocomplete="off" placeholder="ghp_…" data-astro-cid-tyx6x2na> <div class="err" id="pat-err" data-astro-cid-tyx6x2na></div> <div class="checking hidden" id="pat-checking" data-astro-cid-tyx6x2na>
+проверяю токен<span class="dot" data-astro-cid-tyx6x2na></span><span class="dot" data-astro-cid-tyx6x2na></span><span class="dot" data-astro-cid-tyx6x2na></span> </div> <div class="row" style="margin-top:12px; justify-content:space-between;" data-astro-cid-tyx6x2na> <button class="ghost" id="pat-skip" type="button" data-astro-cid-tyx6x2na>уже сохранён</button> <button class="primary" id="pat-btn" type="button" data-astro-cid-tyx6x2na>сохранить</button> </div> </section> <!-- ============ App ============ --> <main id="app" class="hidden" data-astro-cid-tyx6x2na> <div class="topbar" data-astro-cid-tyx6x2na> <div class="topbar-row1" data-astro-cid-tyx6x2na> <strong data-astro-cid-tyx6x2na>admin · tags</strong> <div class="row" data-astro-cid-tyx6x2na> <span class="dirty-badge" id="dirty-count" data-astro-cid-tyx6x2na>нет правок</span> <button class="ghost" id="refresh-list" type="button" title="подтянуть актуальный список постов с GitHub" data-astro-cid-tyx6x2na>🔄 обновить список</button> <button class="ghost" id="forget-pat" type="button" data-astro-cid-tyx6x2na>забыть PAT</button> </div> </div> <div class="refresh-line" data-astro-cid-tyx6x2na> <span id="refresh-status" class="muted" data-astro-cid-tyx6x2na></span> </div> <div class="tabs" data-astro-cid-tyx6x2na> <button class="tab active" data-tab="posts" type="button" data-astro-cid-tyx6x2na>[ ПОСТЫ ]</button> <button class="tab" data-tab="tags" type="button" data-astro-cid-tyx6x2na>[ ТЕГИ ]</button> </div> </div> <!-- ===== Tab: Посты ===== --> <section id="tab-posts" data-astro-cid-tyx6x2na> <div class="search-wrap" data-astro-cid-tyx6x2na> <input class="search" id="search-posts" type="search" placeholder="поиск по title / slug / тегам…" data-astro-cid-tyx6x2na> </div> <div class="filter-chips" id="filter-chips" data-astro-cid-tyx6x2na> <button type="button" data-filter="all" class="active" data-astro-cid-tyx6x2na>все</button> <button type="button" data-filter="none" data-astro-cid-tyx6x2na>без тегов</button> <button type="button" data-filter="few" data-astro-cid-tyx6x2na>мало тегов (1-2)</button> <button type="button" data-filter="many" data-astro-cid-tyx6x2na>много (5+)</button> </div> <p class="global-status" id="status-posts" data-astro-cid-tyx6x2na></p> <div id="posts-list" data-astro-cid-tyx6x2na></div> </section> <!-- ===== Tab: Теги ===== --> <section id="tab-tags" class="hidden" data-astro-cid-tyx6x2na> <div class="search-wrap" data-astro-cid-tyx6x2na> <input class="search" id="search-tags" type="search" placeholder="фильтр тегов…" data-astro-cid-tyx6x2na> </div> <p class="global-status" id="status-tags" data-astro-cid-tyx6x2na></p> <div id="tags-list" data-astro-cid-tyx6x2na></div> </section> </main> <!-- Bulk-action floating bar (shown when posts checked) --> <div class="bulk-bar hidden" id="bulk-bar" data-astro-cid-tyx6x2na> <span class="bulk-count" id="bulk-count" data-astro-cid-tyx6x2na>выбрано: 0</span> <input id="bulk-tag-input" type="text" placeholder="+ добавить тег ко всем" list="all-tags-datalist" autocomplete="off" data-astro-cid-tyx6x2na> <button class="primary" id="bulk-apply" type="button" data-astro-cid-tyx6x2na>применить</button> <span class="bulk-status" id="bulk-status" data-astro-cid-tyx6x2na></span> <button class="ghost" id="bulk-clear" type="button" data-astro-cid-tyx6x2na>снять выбор</button> </div> <!-- Modal mount point --> <div id="modal-root" data-astro-cid-tyx6x2na></div> <script type="application/json" id="posts-data">[{"slug":"chto-s-reklamoi-v-telegram-ia-umru-s-golodu-moi-opyt-458","title":"Что с рекламой в Telegram? Я умру с голоду?? Мой опыт","pubDate":"2026-05-28","tags":["проекты","боты","мнения"]},{"slug":"chat-ishchu-vpison-komnatu-spalnoe-mesto-v-moskve-na-4-457","title":"чат, ищу вписон/комнату/спальное место в Москве на 4+ недели со вторника 26.05","pubDate":"2026-05-22","tags":["нетворкинг","карьера","контактная импровизация","танцы"]},{"slug":"1001-i-1-sposob-poradovat-druzei-v-kovorkinge-454","title":"1001 и 1 способ порадовать друзей в коворкинге","pubDate":"2026-05-20","tags":["друзья"]},{"slug":"kto-ia-chto-ia-vova-novyi-whois-448","title":"кто я, что я? Вова новый #whois ☀️ 👻 🎸","pubDate":"2026-05-17","tags":["whois","проекты","карьера","менторство"]},{"slug":"malo-kto-znaet-chto-u-menia-est-kholodilnik-kanal-s-memami-446","title":"#мало_кто_знает, что у меня есть холодильник канал с мемами","pubDate":"2026-05-13","tags":["школа","творчество"]},{"slug":"navaibkodil-za-vykhodnye-sait-bloga-i-tvorcheskikh-proektov-442","title":"#навайбкодил_за_выходные сайт блога и творческих проектов","pubDate":"2026-05-11","tags":["проекты","творчество","боты","ии"]},{"slug":"kto-ia-chto-ia-vova-novyi-whois","title":"кто я, что я? Вова новый #whois ☀️ 👻 🎸","pubDate":"2026-05-09","tags":["whois","проекты","менторство","продакт","танцы","контактная импровизация","театр","ии","психология"]},{"slug":"plany-na-441","title":"планы на майские","pubDate":"2026-05-09","tags":["трипы","анонс"]},{"slug":"segodnia-7-maia-a-cherez-mesiats-7go-iiunia-budet-moi-den-438","title":"сегодня 7 мая, а через месяц 7го июня будет мой день рождения ☀️","pubDate":"2026-05-07","tags":["трипы","продакт","анонс"]},{"slug":"ia-ne-mogu-popast-v-lichnyi-kabinet-436","title":"Я не могу попасть в личный кабинет","pubDate":"2026-05-06","tags":[]},{"slug":"prokrasy-posle-2-vstrechi-po-praktike-navykov-dbt-435","title":"Прокрасы после 2 встречи по практике навыков ДБТ – наблюдение и групповая динамика","pubDate":"2026-05-04","tags":["психология","рефлексия"]},{"slug":"skhodil-na-gruppovuiu-terapiiu-praktiku-navykov-dbt-strakhi-434","title":"Сходил на групповую терапию & практику навыков ДБТ – страхи и первые ощущения","pubDate":"2026-05-03","tags":["психология","рефлексия","мужские круги"]},{"slug":"vybiraem-novyi-hair-432","title":"выбираем новый hair","pubDate":"2026-04-28","tags":[]},{"slug":"prezentatsiiu-doklada-s-gifkami-mozhno-poklikat-zdes-431","title":"презентацию доклада с гифками можно покликать здесь: piofant.github.io/tusa 🔗","pubDate":"2026-04-27","tags":[]},{"slug":"kak-vova-poznal-legkost-znakomstva-eshche-v-shkole-426","title":"– Как Вова познал лёгкость знакомства ещё в школе?","pubDate":"2026-04-24","tags":["нетворкинг","школа","анонс"]},{"slug":"kakoi-effekt-ot-chteniia-mantry-god-spustia-425","title":"Какой эффект от чтения мантры год спустя","pubDate":"2026-04-12","tags":["медитация","сторителлы"]},{"slug":"moi-druzia-dzhi-pi-titory-ii-agenty-vaibkozhannye-424","title":"Мои друзья джи-пи-титоры, ии-агенты, вайбкожанные – знакомьтесь","pubDate":"2026-04-02","tags":["друзья","ии","проекты"]},{"slug":"krabik-openclaw-uronil-i-zablochil-mne-virtualku-421","title":"💀 крабик openclaw уронил и заблочил мне виртуалку на 20-й день // лонгрид ~3мин","pubDate":"2026-03-31","tags":["ии","боты","сторителлы","безумие","проекты"]},{"slug":"teatr-kak-istseliaiushchaia-fantaziia-pmf-420","title":"Театр как «исцеляющая фантазия» – PMF актёрства с эмоциональными","pubDate":"2026-03-27","tags":["театр","рефлексия","психология","творчество"]},{"slug":"chem-menia-tak-zatsepila-eta-ideia-postupleniia-na-419","title":"Чем меня так зацепила эта идея поступления на актёра? Часть 1\\\\2","pubDate":"2026-03-25","tags":["театр","школа жизни","трипы","творчество"]},{"slug":"trip-v-teatralnyi-vuzik-skhodil-na-dod-v-rgisi-i-414","title":"Трип в театральный вузик: сходил на ДоД в РГИСИ и опросил двух мастеров","pubDate":"2026-03-24","tags":["театр","трипы","вуз","творчество"]},{"slug":"chat-napishite-v-kommentakh-kak-i-gde-vy-so-mnoi-413","title":"Чат, напишите в комментах, как и где вы со мной познакомились?","pubDate":"2026-03-22","tags":["сторителлы","нетворкинг"]},{"slug":"klounskii-nos-obediniaet-411","title":"Клоунский нос объединяет","pubDate":"2026-03-20","tags":["клоунада","театр","сторителлы","творчество"]},{"slug":"znaete-v-chem-prikol-tantsevat-kontaktnuiu-improvizatsiiu-s-409","title":"Знаете, в чем прикол танцевать контактную импровизацию с мужчинами?","pubDate":"2026-03-19","tags":["контактная импровизация","танцы","рекомендации"]},{"slug":"vozmozhnost-uvidet-blogera-vzhivuiu-v-pitere-408","title":"возможность увидеть блогера вживую в питере","pubDate":"2026-02-13","tags":["анонс","трипы","нетворкинг"]},{"slug":"1000-i-1-sposob-ispolzovat-ai-v-zhyzni-405","title":"1000 и 1 способ использовать ai в жызни","pubDate":"2026-02-11","tags":["ии","творчество","сторителлы"]},{"slug":"u-vovy-ostalos-2-mesiatsa-i-27-dnei-studencheskoi-404","title":"у Вовы осталось 2 месяца и 27 дней студенческой подписки на курсор чтоб","pubDate":"2026-02-10","tags":["ии","проекты"]},{"slug":"pochemu-ia-ezzhu-v-tripy-1-4-395","title":"Почему я езжу в трипы (1\\\\4)","pubDate":"2026-02-08","tags":["трипы","рефлексия","психология"]},{"slug":"kak-pereiti-iz-razrabotchika-v-prodakty-394","title":"Как перейти из разработчика в продакты?","pubDate":"2026-02-06","tags":["продакт","карьера","менторство","нетворкинг"]},{"slug":"kak-proshel-god-bezumnykh-eksperimentov-vovy-393","title":"Как прошёл год безумных экспериментов Вовы","pubDate":"2026-01-20","tags":["сторителлы","безумие","рефлексия"]},{"slug":"zapustili-ii-generatsiiu-sammari-v-kontent-mashine-392","title":"Запустили ИИ-генерацию саммари в контент машине с Рамиром – сколько $ принесло?","pubDate":"2026-01-13","tags":["ии","проекты"]},{"slug":"bezuslovnoe-priniatie-387","title":"Безусловное принятие","pubDate":"2026-01-07","tags":["психология","контактная импровизация","мужские круги","танцы"]},{"slug":"postroil-grafik-izmeneniia-vesa-tela-za-last-gody-386","title":"построил график изменения веса тела за ласт годы","pubDate":"2026-01-06","tags":["сторителлы"]},{"slug":"ia-vse-eshche-ne-pridumal-kuda-poekhat-na-novyi-385","title":"я всё ещё не придумал, куда поехать на новый год. может, у вас есть спальное","pubDate":"2025-12-23","tags":["whois","танцы","автостоп","трипы"]},{"slug":"ia-ne-umru-s-golodu-384","title":"школьный проектик внезапно стал приносить прибыль","pubDate":"2025-12-19","tags":["школа","боты","проекты"]},{"slug":"moi-put-k-kontaktnoi-improvizatsii-380","title":"Мой путь к контактной импровизации","pubDate":"2025-11-17","tags":["контактная импровизация","сторителлы","танцы"]},{"slug":"chat-privet-blizhaishie-2-nedeli-u-menia-bolit-378","title":"","pubDate":"2025-11-03","tags":["продакт","анонс","нетворкинг"]},{"slug":"puteshestviia-v-rezhime-nabliudatelia-chast-2-375","title":"Путешествия в режиме наблюдателя, часть 2","pubDate":"2025-10-29","tags":["трипы","автостоп","сторителлы"]},{"slug":"puteshestviia-v-rezhime-nabliudatelia-za-zhizniu-i-372","title":"Путешествия в режиме наблюдателя [за жизнью и историями людей]","pubDate":"2025-10-28","tags":["трипы","сторителлы"]},{"slug":"ia-nashel-metriku-vnutrennei-opory-371","title":"Я нашёл метрику внутренней опоры","pubDate":"2025-10-22","tags":["рефлексия","психология","мужские круги"]},{"slug":"provel-pervuiu-kinda-kouchingovuiu-sessiiu-delius-369","title":"Провел первую kinda коучинговую сессию, делюсь впечатлениями","pubDate":"2025-10-18","tags":["менторство","рефлексия","психология"]},{"slug":"u-menia-est-liubimyi-stolb-v-tsentre-pitera-363","title":"У меня есть любимый столб в центре Питера","pubDate":"2025-10-11","tags":["сторителлы","психология","жизнь","танцы"]},{"slug":"zatsenite-kakoi-u-nas-predmet-v-vuze-zapustili-356","title":"Зацените, какой у нас предмет в ВУЗе запустили — 'Создание продуктов на основе","pubDate":"2025-10-05","tags":["вуз","ии"]},{"slug":"bachata-i-obestsenivanie-rezultata-355","title":"Бачата и обесценивание результата","pubDate":"2025-09-26","tags":["танцы","рефлексия","сторителлы"]},{"slug":"chat-privet-353","title":"Чат, привет!","pubDate":"2025-09-25","tags":["нетворкинг"]},{"slug":"s-godik-kak-u-menia-novoe-khobbi-delat-sebe-347","title":"С годик как у меня новое хобби — делать себе футболки с принтами, уже есть:","pubDate":"2025-09-22","tags":["творчество"]},{"slug":"uporstvo-ne-srabotalo-5-redzhektov-na-letniuiu-340","title":"Упорство не сработало: 5 реджектов на летнюю школу","pubDate":"2025-09-10","tags":["летняя школа","трипы","сторителлы"]},{"slug":"2-raza-promochil-nogu-v-bolote-pochuvstvoval-334","title":"2 раза промочил ногу в болоте & почувствовал спокойность Белого моря","pubDate":"2025-09-01","tags":["трипы","друзья"]},{"slug":"muzhskie-krugi-stali-chastiu-moei-zhizni-i-vot-333","title":"Мужские круги стали частью моей жизни, и вот чувствуется результат","pubDate":"2025-08-28","tags":["мужские круги","рефлексия","психология"]},{"slug":"lektsiia-pro-moi-pervyi-opyt-avtostopa-s-329","title":"Лекция про мой первый опыт автостопа: с результатами и впечатлениями","pubDate":"2025-08-19","tags":["автостоп","трипы","сторителлы"]},{"slug":"znakomtes-iura-moi-partner-po-avtostopu-326","title":"Знакомьтесь, Юра — мой партнёр по автостопу","pubDate":"2025-08-05","tags":["автостоп","школа жизни","рефлексия","трипы"]},{"slug":"v-chem-ii-effektiven-dlia-produktovogo-diskaveri-a-325","title":"В чем ИИ эффективен для продуктового дискавери, а в чем не очень? Результаты","pubDate":"2025-07-31","tags":["ии","продакт","проекты"]},{"slug":"trip-na-bessonnitsu-telesnye-praktiki-poliamory-i-319","title":"Трип на Бессонницу: телесные практики, полиаморы и изобилие","pubDate":"2025-07-23","tags":["трипы","нетворкинг","контактная импровизация","танцы"]},{"slug":"6-dnei-s-randomami-v-lesu-ili-zhizn-v-313","title":"6 дней с рандомами в лесу или жизнь в настоящем","pubDate":"2025-07-13","tags":["трипы","нетворкинг","рефлексия"]},{"slug":"moi-pervyi-opyt-avtostopa-proverka-na-prochnost-i-307","title":"Мой первый опыт автостопа: проверка на прочность и доверие к миру","pubDate":"2025-06-22","tags":["автостоп","трипы","сторителлы"]},{"slug":"open-call-edtekham-i-vsem-ostalnym-go-dadim-306","title":"⚡️ open-call эдтехам и всем остальным: го дадим ценность 5000 абитуриентам","pubDate":"2025-06-13","tags":["анонс","карьера","вуз"]},{"slug":"vova-novyi-21-godik-s-dnem-rozhdeniia-302","title":"Вова.Новый, 21 годик с днем рождения","pubDate":"2025-06-07","tags":[]},{"slug":"sns-birthday-tusa-v-moskve-7-go-iiunia-299","title":"sns-birthday-туса в Москве 7-го июня","pubDate":"2025-06-04","tags":["анонс","нетворкинг","школа жизни"]},{"slug":"trip-v-khoroshee-nastroenie-na-produkt-kemp-vesna-295","title":"трип в хорошее настроение на продукт кемп весна 2025","pubDate":"2025-05-26","tags":["трипы","нетворкинг","менторство"]},{"slug":"neopredelennost-porozhdaet-razobrannost-kak-ia-294","title":"неопределенность порождает разобранность, как я пробовал с ней справляться? 4","pubDate":"2025-05-20","tags":["рефлексия","школа жизни","психология"]},{"slug":"zareshat-keis-i-otobratsia-na-dzhuna-prodakta-v-293","title":"🗺 Зарешать кейс и отобраться на джуна продакта в MIRO — результаты моих менти","pubDate":"2025-05-14","tags":["продакт","менторство","карьера"]},{"slug":"razobrannost-zheki-rumynskogo-art-khaus-khata-i-288","title":"Разобранность Жеки Румынского, арт-хаус хата и контакт","pubDate":"2025-05-11","tags":["друзья","рефлексия","менторство"]},{"slug":"ia-sbezhal-s-vipassany-ot-sebia-na-4-i-den-284","title":"Я сбежал с випассаны от себя на 4-й день","pubDate":"2025-05-06","tags":["випассана","рефлексия","сторителлы","медитация"]},{"slug":"trip-v-sebia-283","title":"Трип в себя","pubDate":"2025-05-02","tags":["випассана","рефлексия","безумие","медитация"]},{"slug":"ia-chitaiu-mantru-uzhe-god-kakoi-effekt-i-chto-282","title":"Я читаю мантру уже год: какой эффект и что принесло в жизнь?","pubDate":"2025-04-22","tags":["психология","рефлексия","проекты"]},{"slug":"vov-otkuda-u-tebia-stolko-podpischikov-v-pioblog-281","title":"Вов, откуда у тебя столько подписчиков в @pioblog?","pubDate":"2025-04-18","tags":["нетворкинг","боты","whois","проекты"]},{"slug":"proiti-pervyi-v-zhizni-keis-sobes-i-otobratsia-v-280","title":"Пройти первый в жизни кейс-собес и отобраться в ШМЯ / Результаты моих менти","pubDate":"2025-04-08","tags":["продакт","менторство","карьера"]},{"slug":"rezultat-eto-diff-278","title":"Результат — это diff","pubDate":"2025-03-29","tags":["школа жизни","рефлексия","карьера","менторство"]},{"slug":"ia-skhodil-na-5-muzhskikh-krugov-i-pochuvstvoval-276","title":"я сходил на 5+ мужских кругов и почувствовал радость, близость, объединение","pubDate":"2025-03-22","tags":["мужские круги","психология","рефлексия"]},{"slug":"storitell-pro-monetizatsiiu-psaiko-chast-2-kakie-275","title":"#сторителл про монетизацию Псайко, часть 2 / Какие были гипотезы и как я их","pubDate":"2025-03-20","tags":["продакт","проекты","сторителлы"]},{"slug":"0-lidov-za-2-mesiatsa-ili-kak-ia-protestiroval-3-274","title":"0 лидов за 2 месяца или как я протестировал 3 гипотезы монетизации пет-проекта","pubDate":"2025-03-19","tags":["проекты","боты","продакт"]},{"slug":"ia-prikrepil-video-samoprezentatsiiu-k-100-272","title":"Я прикрепил видео-самопрезентацию к 100+ откликам: как конвертит и какие выводы?","pubDate":"2025-03-13","tags":["карьера","продакт"]},{"slug":"samoprezentatsiia-dlia-sobesa-kak-sostavit-chto-271","title":"Самопрезентация для собеса: как составить, что даёт и как конвертит?","pubDate":"2025-03-12","tags":["карьера","продакт","рекомендации"]},{"slug":"vova-ishchet-rabotu-prodaktom-i-budet-rad-vashim-268","title":"Вова ищет работу продактом и будет рад вашим рекомендациям 👀","pubDate":"2025-03-04","tags":["продакт","карьера","проекты"]},{"slug":"trip-na-zimniuiu-shkolu-po-klounade-263","title":"трип на зимнюю школу по клоунаде","pubDate":"2025-02-26","tags":["трипы","клоунада","рефлексия","театр","творчество"]},{"slug":"chem-ia-mogu-byt-polezen-prodaktam-262","title":"Чем я могу быть полезен продактам","pubDate":"2025-02-01","tags":["продакт","карьера","менторство"]},{"slug":"rezultaty-moikh-menti-chast-1-ot-direktora-261","title":"📍 Результаты моих менти [часть 1] → от директора даркстора Яндекс Лавки до","pubDate":"2025-01-21","tags":["менторство","карьера","продакт"]},{"slug":"chto-proizoshlo-v-nashem-keis-klube-dlia-prodaktov-257","title":"Что произошло в нашем кейс-клубе для продактов за год? И почему ты ещё не с","pubDate":"2025-01-16","tags":["продакт","карьера","нетворкинг","анонс"]},{"slug":"kak-ia-skhodil-v-novogodnii-kanikuliarnyi-trip-v-253","title":"как я сходил в новогодний каникулярный трип в рендом кофе","pubDate":"2025-01-13","tags":["нетворкинг","рефлексия","анонс"]},{"slug":"3-refleksiia-sbor-fidbeka-tiaga-k-strukture-vyvody-252","title":"(3) рефлексия + сбор фидбека + тяга к структуре = выводы на будущее","pubDate":"2025-01-10","tags":["рефлексия","менторство"]},{"slug":"dobavim-siuda-priemy-aktivnogo-slushaniia-ia-251","title":"Добавим сюда приемы активного слушания, я чаще всего органически использую","pubDate":"2025-01-08","tags":["психология","рефлексия"]},{"slug":"2-zhivoi-um-chutkost-client-problem-definition-250","title":"(2) живой ум + чуткость = client problem definition","pubDate":"2025-01-07","tags":["психология","рефлексия"]},{"slug":"1-moi-persistence-vedlivost-problem-solving-i-dostizhenie-249","title":"(1) мой persistence + въедливость = problem solving и достижение результата","pubDate":"2025-01-06","tags":["рефлексия","школа жизни"]},{"slug":"moi-silnye-storony-i-chem-oni-polezny-248","title":"Мои сильные стороны и чем они полезны","pubDate":"2025-01-06","tags":["рефлексия","карьера"]},{"slug":"3-mira-shkola-vuz-rabota-247","title":"3 мира — школа, ВУЗ, работа","pubDate":"2025-01-02","tags":["школа","вуз","карьера","проекты"]},{"slug":"nachinaem-cherez-polchasa-245","title":"начинаем через полчаса","pubDate":"2024-12-22","tags":["анонс"]},{"slug":"anons-prazdnuem-vmeste-s-vovoi-1k-podpischikov-v-244","title":"[анонс] празднуем вместе с Вовой 1К подписчиков в @pioblog — в это воскресенье","pubDate":"2024-12-19","tags":["анонс","нетворкинг","проекты"]},{"slug":"kak-v-avito-i-ozon-otsenivaiut-softy-pri-naime-243","title":"Как в Авито и Ozon оценивают софты при найме джунов менеджеров — делюсь опытом","pubDate":"2024-12-15","tags":["карьера","продакт","сторителлы"]},{"slug":"mozhno-dobavit-chto-posterstvo-povyshaet-241","title":"можно добавить, что «постерство» повышает visibility, а оно влияет на","pubDate":"2024-12-03","tags":["рекомендации","жизнь"]},{"slug":"polza-linkedina-chast-2-internet-friends-i-240","title":"польза линкедина [часть 2] — internet friends и visibility","pubDate":"2024-12-03","tags":["друзья","карьера","нетворкинг"]},{"slug":"chto-delat-esli-ty-prodakt-antifroda-avito-238","title":"","pubDate":"2024-11-19","tags":["продакт","карьера"]},{"slug":"che-to-tekstovye-posty-dlinno-slozhno-chitat-navernoe-da-237","title":"че-то текстовые посты длинно-сложно-читать, наверное, да?","pubDate":"2024-11-18","tags":["продакт","анонс"]},{"slug":"kak-ia-reshaiu-testovye-na-prodakta-2-chast-235","title":"Как я решаю тестовые на продакта [2 часть]","pubDate":"2024-11-13","tags":["продакт","карьера","сторителлы"]},{"slug":"pov-na-hr-skrininge-tebia-sprosili-chem-seichas-227","title":"pov: на hr-скрининге тебя спросили \\\"чем сейчас занимаешься?\\\"","pubDate":"2024-10-30","tags":["whois","проекты","карьера"]},{"slug":"trip-na-epik-grous-2024-chto-skazal-sipio-s-kem-220","title":"трип на эпик гроус 2024 — что сказал сипио, с кем сфоткался и какие результаты?","pubDate":"2024-10-26","tags":["продакт","трипы","нетворкинг"]},{"slug":"okazalsia-v-roli-reportera-dlia-komiuniti-218","title":"Оказался в роли репортёра для комьюнити продактов Яндекса на epic growth","pubDate":"2024-10-25","tags":["продакт","карьера","трипы"]},{"slug":"polza-linkedina-216","title":"Польза линкедина","pubDate":"2024-10-21","tags":["карьера","нетворкинг"]},{"slug":"zanial-14-iz-420-mesto-v-reshenii-keisa-ot-avito-211","title":"👀 занял 14 из 420 место в решении кейса от Avito Product Bootcamp, попав в","pubDate":"2024-10-14","tags":["продакт","карьера"]},{"slug":"chem-zakonchilas-istoriia-s-otborom-na-midla-210","title":"Чем закончилась история с отбором на мидла продакта в Доставку","pubDate":"2024-10-12","tags":["продакт","карьера","школа жизни"]},{"slug":"kak-ia-ustroilsia-velokurerom-chtoby-sdelat-207","title":"Как я устроился велокурьером, чтобы сделать тестовое на продакта в Доставку","pubDate":"2024-10-09","tags":["продакт","трипы","сторителлы"]},{"slug":"kak-ia-reshaiu-testovye-na-prodakta-podkhod-kak-na-202","title":"Как я решаю тестовые на продакта? Подход «Как на работе» [часть 1\\\\2]","pubDate":"2024-10-04","tags":["продакт","карьера"]},{"slug":"futbolka-kak-marker-bezumiia-i-atenshen-magnit-199","title":"Футболка как маркер безумия и атеншен-магнит","pubDate":"2024-09-15","tags":["творчество","безумие","карьера"]},{"slug":"delius-rezultatami-futbolki-dlia-poiska-raboty-195","title":"Делюсь результатами футболки для поиска работы — нашёл ли я работу продактом","pubDate":"2024-09-05","tags":["карьера","продакт","боты","творчество","проекты"]},{"slug":"sdelal-prototip-resheniia-dlia-poiska-raboty-na-190","title":"Сделал прототип решения для поиска работы на оффлайн конференции [до прода за","pubDate":"2024-08-24","tags":["продакт","карьера","боты","творчество","проекты"]},{"slug":"kusochki-lsh-461","title":"кусочки лш","pubDate":"2024-08-20","tags":["летняя школа","трипы","сторителлы"]},{"slug":"chto-takoe-tripy-v-diskaveri-novogo-opyta-184","title":"Что такое Трипы в дискавери [нового опыта, ощущений, людей, контекстов, смыслов]","pubDate":"2024-08-18","tags":["трипы","рефлексия","школа жизни"]},{"slug":"davaite-znakomitsia-ia-vova-i-ia-meniaius-177","title":"Давайте знакомиться — я Вова, и я меняюсь ☀️","pubDate":"2024-08-10","tags":["whois","продакт","трипы"]},{"slug":"lsh-logbook-den-4-454","title":"ЛШ logbook, день 4","pubDate":"2024-08-06","tags":["летняя школа","рефлексия","друзья","трипы"]},{"slug":"gde-eshche-soprikasatsia-s-novymi-liudmi-krome-tus-170","title":"Где ещё соприкасаться с новыми людьми, кроме тус с контекстом знакомства?","pubDate":"2024-07-22","tags":["нетворкинг","рекомендации"]},{"slug":"privet-ia-seichas-na-letnei-shkole-v-tripe-v-moi-168","title":"Привет! Я сейчас на Летней Школе, в трипе в мой любимый бесконечный контекст","pubDate":"2024-07-17","tags":["летняя школа","трипы","рефлексия"]},{"slug":"dopom-konspekt-tezisov-togo-kak-predstavlial-sebia-na-kruge-438","title":"Допом конспект тезисов того, как представлял себя на круге знакомств:","pubDate":"2024-07-12","tags":["whois","продакт","трипы"]},{"slug":"lsh-logbook-den-1-431","title":"ЛШ logbook, день 1","pubDate":"2024-07-12","tags":["летняя школа","театр","трипы","творчество"]},{"slug":"lsh-logbook-den-2-440","title":"ЛШ logbook, день 2","pubDate":"2024-07-12","tags":["летняя школа","сторителлы","рекомендации","трипы"]},{"slug":"kak-postupit-v-top-vuzy-po-proektam-a-ne-ege-167","title":"Как поступить в топ-ВУЗы по проектам, а не ЕГЭ/олимпиадам","pubDate":"2024-06-16","tags":["вуз","проекты","школа"]},{"slug":"moi-opyt-postupleniia-po-proektam-na-grant-v-top-163","title":"Мой опыт поступления по проектам на грант в топ-ВУЗы: МФТИ, МИФИ, ИТМО,","pubDate":"2024-06-12","tags":["вуз","школа","анонс"]},{"slug":"segodnia-mne-20-157","title":"Сегодня мне 20 🎈","pubDate":"2024-06-07","tags":["whois","рефлексия"]},{"slug":"culture-fit-yandex-as-i-feel-it-ili-iandeks-eto-pro-156","title":"culture fit yandex as I feel it или Яндекс — это про:","pubDate":"2024-05-26","tags":["карьера","продакт"]},{"slug":"zapis-ot-26-maia-2024-150","title":"Про что для меня работа в Яндексе","pubDate":"2024-05-26","tags":["карьера"]},{"slug":"kak-ia-pomogaiu-sebe-na-sobesedovanii-na-prodakta-149","title":"Как я помогаю себе на собеседовании на продакта","pubDate":"2024-05-16","tags":["продакт","карьера","сторителлы"]},{"slug":"kak-ia-sobral-svoi-keis-klub-dlia-podgotovki-k-interviu-147","title":"Как я собрал свой кейс-клуб для подготовки к интервью","pubDate":"2024-04-15","tags":["продакт","карьера","проекты"]},{"slug":"podgotovka-k-keis-sektsii-interviu-na-prodakta-145","title":"Подготовка к кейс-секции интервью на продакта","pubDate":"2024-04-12","tags":["продакт","карьера","рекомендации"]},{"slug":"top-8-prichin-pochemu-ia-poedu-na-produkt-kemp-144","title":"Топ-8 причин почему я поеду на продукт кемп весна 2024","pubDate":"2024-04-03","tags":["трипы","нетворкинг","продакт","анонс"]},{"slug":"kak-naiti-rabotu-stazherom-dzhunom-prodaktom-142","title":"Как найти работу стажером/джуном продактом","pubDate":"2024-03-01","tags":["продакт","карьера","нетворкинг"]},{"slug":"k-zavtrashnemu-postu-141","title":"К завтрашнему посту","pubDate":"2024-02-29","tags":["анонс"]},{"slug":"vse-nachinaetsia-s-mentora-140","title":"Все начинается с ментора","pubDate":"2024-02-03","tags":["менторство","продакт","карьера"]},{"slug":"pro-hab-hab-dlia-kogo-kakuiu-problemu-reshaet-i-v-chem-tsennost","title":"Про хаб-хаб: для кого, какую проблему решает и в чем ценность","pubDate":"2024-01-21","tags":["боты","проекты"]},{"slug":"ia-v-iandekse-stazher-menedzher-produkta-132","title":"Я в Яндексе, стажёр менеджер продукта","pubDate":"2023-10-07","tags":["продакт","карьера","сторителлы"]},{"slug":"freimvork-khoroshego-sostoianiia-i-kucha-ssylok-na-131","title":"Фреймворк хорошего состояния и куча ссылок на комьюнити про ННО, эпатию к себе","pubDate":"2023-08-27","tags":["психология","рефлексия","школа жизни"]},{"slug":"produkt-kemp-leto-2023-eto-kakoi-to-trip-na-2-dnia-130","title":"Продукт кемп лето 2023 это какой-то трип на 2 дня в хорошее состояние,","pubDate":"2023-08-21","tags":["трипы","нетворкинг","школа жизни"]},{"slug":"eto-samoe-produkt-kemp-leto-2023-129","title":"Это самое, продукт кемп лето 2023?","pubDate":"2023-08-15","tags":["трипы","нетворкинг","анонс"]},{"slug":"segodnia-mne-19-128","title":"Сегодня мне 19","pubDate":"2023-06-07","tags":["whois"]},{"slug":"2-dnia-do-dedlaina-podachi-zaiavki-na-letniuiu-127","title":"🔄 2 дня до дедлайна подачи заявки на летнюю школу 2023","pubDate":"2023-05-18","tags":["летняя школа","анонс","трипы"]},{"slug":"pochemu-ia-reshil-stat-prodakt-menedzherom-pm-126","title":"Почему я решил стать продакт-менеджером (PM)?","pubDate":"2023-04-19","tags":["продакт","рефлексия","проекты","школа жизни"]},{"slug":"ia-sdelal-prezentatsiiu-pro-netvorking-tusy-kak-120","title":"Я сделал презентацию про нетворкинг тусы: как перезнакомить группу людей, что","pubDate":"2023-03-12","tags":["нетворкинг","проекты","анонс"]},{"slug":"delaiu-prezu-pro-netvorking-tusy-i-to-chto-takoe-116","title":"Делаю презу про нетворкинг тусы и то, что такое контекст знакомства, где его","pubDate":"2023-02-28","tags":["нетворкинг","проекты"]},{"slug":"zapis-ot-1-ianvaria-2023-115","title":"Запись от 1 января 2023","pubDate":"2023-01-01","tags":[]},{"slug":"random-coffee-boty-kak-sposob-znakomitsia-s-interesnymi-114","title":"random-coffee боты как способ знакомиться с интересными людьми","pubDate":"2022-12-09","tags":["нетворкинг","боты","рекомендации","проекты"]},{"slug":"zapis-ot-9-dekabria-2022-113","title":"Random coffee переписка — июль 2022","pubDate":"2022-12-09","tags":["нетворкинг"]},{"slug":"dve-istorii-konnekta-na-etoi-nedele-112","title":"Две истории коннекта на этой неделе","pubDate":"2022-11-04","tags":["нетворкинг","школа","менторство"]},{"slug":"zapis-ot-4-noiabria-2022-111","title":"Random coffee метч — 12 общих чатов","pubDate":"2022-11-04","tags":["нетворкинг"]},{"slug":"consuming-self-development-content","title":"Как я потребляю контент по саморазвитию","pubDate":"2022-07-17","tags":["школа","боты","творчество","ии","школа жизни","проекты"]},{"slug":"teper-ia-uzhe-bolshe-goda-potrebliaiu-kontent-po-110","title":"Теперь я уже больше года потребляю контент по саморазвитию с помощью своего же","pubDate":"2022-07-17","tags":["проекты","боты","ии","школа"]},{"slug":"segodnia-mne-18-107","title":"Сегодня мне 18.","pubDate":"2022-06-07","tags":["сторителлы","анонс"]},{"slug":"go-na-letniuiu-shkolu-ostalas-nedelia-do-dedlaina-106","title":"Го на Летнюю Школу. Осталась неделя до дедлайна вступов.","pubDate":"2022-05-23","tags":["летняя школа","анонс","трипы"]},{"slug":"shkola-vse-bolshe-nas-uchit-tam-ne-budut-dalshe-101","title":"Школа - всё. Больше нас учить там не будут, дальше сами.","pubDate":"2022-05-19","tags":["школа","школа жизни","сторителлы","рекомендации"]},{"slug":"vtoroi-moi-kanal-s-kusochkami-zhizni-pro-100","title":"Второй мой канал — кусочки жизни без правок и редактуры","pubDate":"2022-05-16","tags":["анонс"]},{"slug":"k-slovu-napishite-v-kommentakh-chto-po-vashemu-mneniiu-99","title":"К слову, напишите в комментах, что по вашему мнению может повысить","pubDate":"2022-04-21","tags":[]},{"slug":"serendipity","title":"Серендипность aka сверх-удача как образ жизни","pubDate":"2022-04-21","tags":["жизнь","школа жизни","рекомендации"]},{"slug":"sozdal-vnutri-telegram-bota-a-lia-binarnuiu-97","title":"Создал внутри Telegram-бота а-ля бинарную своеобразную соц-сеть BGSN 🌐 —","pubDate":"2022-04-17","tags":["боты","творчество","проекты"]},{"slug":"priglasili-na-mental-hour-udivitelno-krinzhovo-94","title":"Пригласили на mental hour: удивительно, кринжово, спокойно, открыто, чиллово","pubDate":"2022-04-06","tags":["психология","рефлексия","трипы"]},{"slug":"importnul-neskolko-starykh-telegram-kanalov-s-89","title":"Импортнул несколько старых Telegram-каналов с большим количеством длиннопостов","pubDate":"2022-03-30","tags":[]},{"slug":"sobiraem-v-subbotu-netvorking-tusu-v-moskve-88","title":"Собираем в субботу нетворкинг-тусу в Москве вечером в 17-18 часов.","pubDate":"2022-03-24","tags":["нетворкинг","анонс"]},{"slug":"ingress","title":"Про Ingress как кусок моего детства","pubDate":"2022-03-12","tags":["сторителлы","нетворкинг","трипы"]},{"slug":"eng-meetup","title":"Открыл для себя регулярные физтеховские english meetup-ы ","pubDate":"2022-02-12","tags":["нетворкинг","вуз","боты","проекты"]},{"slug":"underground-robotics","title":"Навестил парней из Underground Robotics с ПМ МИСиС","pubDate":"2022-02-02","tags":["вуз","проекты","ии"]},{"slug":"zapis-ot-29-ianvaria-2022-77","title":"Тусa в квартире — мандарины и знакомства","pubDate":"2022-01-29","tags":["нетворкинг"]},{"slug":"gratitude-practice","title":"Практика благодарности с эволюционной точки зрения","pubDate":"2022-01-17","tags":["боты","психология","рефлексия","проекты"]},{"slug":"popytka-nauchitsia-liubit-sebia-75","title":"","pubDate":"2022-01-17","tags":["психология","рефлексия"]},{"slug":"networking-party","title":"Сходил на нетворкинг-тусу","pubDate":"2022-01-09","tags":["нетворкинг","трипы"]},{"slug":"define-self-reflexion","title":"Как я определяю рефлексию?","pubDate":"2022-01-03","tags":["рефлексия","психология"]},{"slug":"iskat-liubov-u-shkolnykh-uchitelei-kazhetsia-73","title":"Искать любовь у школьных учителей — кажется, плохая затея.","pubDate":"2021-12-31","tags":["школа","рефлексия"]},{"slug":"final-russian-lang-school-essay","title":"Написал про сильное чувство любви на итоговом сочинении","pubDate":"2021-12-01","tags":["школа","сторителлы"]},{"slug":"poem-about-remote-education","title":"Написал стихотворение про учёбу на дистанте","pubDate":"2021-11-12","tags":["творчество","вуз"]},{"slug":"secular-evening","title":"Прожил один вечер светской жизни","pubDate":"2021-10-03","tags":["театр","школа","сторителлы","творчество"]},{"slug":"v-11-klass-mne-vse-taki-kak-to-udalos-postupit-v-62","title":"В 11 класс мне все-таки как-то удалось поступить в одну школу, которую мне","pubDate":"2021-09-05","tags":["школа"]},{"slug":"dalee-poekhal-na-liftakh-na-poslednie-etazhi-i-pobrodil-tam-53","title":"Далее поехал на лифтах на последние этажи и побродил там, увидел таблички","pubDate":"2021-08-03","tags":["вуз","сторителлы"]},{"slug":"na-sleduiushchii-den-do-razdachi-vsem-komandam-keisov-ia-48","title":"На следующий день до раздачи всем командам кейсов я решил, что ограничиваться","pubDate":"2021-07-07","tags":["летняя школа","нетворкинг","школа жизни","трипы"]},{"slug":"nemnogo-pro-kaifovost-uslovii-prozhivaniia-komnata-byla-49","title":"Немного про кайфовость условий проживания. Комната была очень даже норм, с","pubDate":"2021-07-07","tags":["летняя школа","нетворкинг","проекты","школа","трипы"]},{"slug":"po-priezde-domoi-ia-chuvstvoval-grust-ot-togo-chto-vse-50","title":"","pubDate":"2021-07-07","tags":["рефлексия","школа жизни"]},{"slug":"savvateev-HSE-lecture","title":"Как я сходил на ФКН ВШЭ на лекцию к Савватееву","pubDate":"2021-07-01","tags":["вуз","сторителлы"]},{"slug":"summer-dream-school","title":"Как, кажется, сбылась моя мечта о летней школе","pubDate":"2021-06-16","tags":["летняя школа","нетворкинг","школа","трипы"]},{"slug":"zapis-ot-3-aprelia-2021-40","title":"Запись от 3 апреля 2021","pubDate":"2021-04-03","tags":[]},{"slug":"i-can-not-relax-or-rest","title":"","pubDate":"2021-01-06","tags":["рефлексия","жизнь"]},{"slug":"pro-kursy-dlia-izucheniia-python-39","title":"Про курсы для изучения Python","pubDate":"2021-01-04","tags":["рекомендации"]},{"slug":"zapis-ot-3-ianvaria-2021-37","title":"Запись от 3 января 2021","pubDate":"2021-01-03","tags":[]},{"slug":"chto-ne-tak-s-obrazovaniem-v-fizmat-klasse-v-32","title":"Что не так с образованием в физмат классе, в котором я учусь or Почему мой","pubDate":"2021-01-02","tags":["школа","рефлексия","школа жизни"]},{"slug":"dumalos-chto-po-programmirovaniiu-v-10-klasse-dolzhno-byt-36","title":"Думалось, что по программированию в 10 классе должно быть что-то крутое. Я","pubDate":"2021-01-02","tags":["школа","ии","рефлексия"]},{"slug":"edinstvennoe-chto-vyzyvaet-u-menia-somnenie-eto-aktualnost-31","title":"Единственное, что вызывает у меня сомнение, это актуальность знаний для","pubDate":"2021-01-02","tags":["школа"]},{"slug":"pro-menia-i-fiziku-29","title":"Про меня и физику","pubDate":"2021-01-02","tags":["школа","рефлексия","сторителлы"]},{"slug":"pro-menia-i-informatiku-programmirovanie-35","title":"Про меня и информатику (программирование)","pubDate":"2021-01-02","tags":["школа","сторителлы","ии"]},{"slug":"pro-menia-i-russkii-30","title":"Про меня и русский","pubDate":"2021-01-02","tags":["школа","рекомендации"]},{"slug":"moe-pervoe-polugodie-10-klassa-chto-ia-ponial-23","title":"Моё первое полугодие 10 класса: что я понял.","pubDate":"2020-12-27","tags":["школа","сторителлы","рефлексия"]},{"slug":"part-2-otnoshenie-k-obrazovatelnym-kursam-25","title":"part 2: Отношение к образовательным курсам.","pubDate":"2020-12-27","tags":["рефлексия","школа жизни"]},{"slug":"seichas-ia-nedavno-uvidel-sleduiushchii-videorolik-kotoryi-27","title":"","pubDate":"2020-12-27","tags":["школа","рефлексия","школа жизни"]},{"slug":"u-tebia-vsegda-est-shans-vse-perepisat-ili-another-26","title":"\\\"У тебя всегда есть шанс всё переписать\\\" или another my way (про меня и биохим","pubDate":"2020-12-27","tags":["школа","сторителлы","школа жизни"]},{"slug":"kazhetsia-chto-khot-kaplia-samostoiatelnoi-22","title":"Кажется, что хоть капля самостоятельной познавательной активности может","pubDate":"2020-12-19","tags":["рефлексия"]},{"slug":"dve-takie-kazhetsia-ochevidnye-tsitaty-zakhotelos-20","title":"Две такие, кажется, очевидные цитаты (захотелось записать):","pubDate":"2020-10-15","tags":[]},{"slug":"stranstvuiushchie-v-golove-mysli-o-tom-zachem-vse-18","title":"Странствующие в голове мысли о том, зачем все-таки поступать в норм ВУЗ -","pubDate":"2020-09-26","tags":["вуз","карьера"]},{"slug":"cotour-plot-x-2-y-2-5-3-sqrt-x-2-1-16","title":"cotour plot x^2+((y+2.5)/3-sqrt(|x|))^2-1","pubDate":"2020-09-21","tags":[]},{"slug":"plot-x-16sin-3t-y-13cost-5cos2t-2cos3t-cos4t-17","title":"plot x=16sin^3t, y=13cost-5cos2t-2cos3t-cos4t","pubDate":"2020-09-21","tags":[]},{"slug":"plot-x-2-y-sqrt-x-2-1-14","title":"plot x^2+(y-sqrt(|x|))^2=1","pubDate":"2020-09-21","tags":[]},{"slug":"real-plot-sqrt-1-abs-x-1-2-arccos-1-abs-x-pi-x-pi-pi-15","title":"real plot[sqrt(1-(abs(x)-1)^2), arccos(1-abs(x))-pi], x=-pi..pi","pubDate":"2020-09-21","tags":[]},{"slug":"real-plot-sqrt-cos-x-cos-200x-sqrt-abs-x-pi-4-4-x-13","title":"real plot sqrt(cos(x))*cos(200x)+sqrt(abs(x))-pi/4)*(4-x^2)^0.01, x=-2..2","pubDate":"2020-09-21","tags":[]},{"slug":"kak-v-nashei-shkole-prokhodil-karantin-dlia-11","title":"Как в нашей школе проходил карантин (для понимания полной истории можно не","pubDate":"2020-08-22","tags":["школа","сторителлы"]},{"slug":"priblizhalsia-konets-goda-vremia-v-kotoroe-v-obychnoe-12","title":"Приближался конец года, время, в которое в обычное школьное время у нас","pubDate":"2020-08-22","tags":["школа","сторителлы","рефлексия"]},{"slug":"fizmat-klass-i-ego-otlichie-ot-9","title":"Физмат класс и его отличие от общеобразовательного класса. История","pubDate":"2020-08-13","tags":["школа","сторителлы"]},{"slug":"chto-prinosit-napisanie-teksta-refleksii-nad-5","title":"Что приносит написание текста рефлексии над","pubDate":"2020-08-12","tags":["рефлексия","школа","сторителлы"]},{"slug":"i-zdes-ia-sovershil-bolshuiu-oshibku-ia-dumal-ne-o-tom-kakoi-6","title":"И здесь я совершил большую ошибку. Я думал не о том, какой из этих профилей","pubDate":"2020-08-12","tags":["школа","сторителлы","школа жизни"]},{"slug":"samye-populiarnye-posty-v-etom-kanale-4","title":"📍 Самые популярные посты в этом канале:","pubDate":"2020-08-12","tags":["whois","проекты"]},{"slug":"seichas-na-styke-9-10-klassa-ia-vse-tak-zhe-ne-ponimaiu-8","title":"Сейчас на стыке 9-10 класса я всё так же не понимаю, нравится ли мне физика с","pubDate":"2020-08-12","tags":["школа","рефлексия"]},{"slug":"ucheba-v-9-fizmat-klasse-dalas-mne-ne-nerealno-slozhno-no-7","title":"Учёба в 9 физмат классе далась мне не нереально сложно, но достаточно не","pubDate":"2020-08-12","tags":["школа","сторителлы"]}]</script> <script>(function(){const base = "";
+
+			/* ============================================================
+			   /admin/tags — клиентская логика
+			   ============================================================ */
+
+			const PASSWORD_SHA256 =
+				'269ee3f2403883aa1f7e62cca60a08794c62227dff0ff3076d1b731d6ae795b6';
+
+			const REPO_OWNER = 'piofant';
+			const REPO_NAME = 'pioblog-source';
+			const BRANCH = 'main';
+
+			const LS_PAT_KEY = 'pioblog-admin-pat';
+			const LS_PW_OK_KEY = 'pioblog-admin-pw-ok';
+
+			const $ = (id) => document.getElementById(id);
+
+			// ====================================================
+			// gate logic (password + PAT)
+			// ====================================================
+			async function sha256Hex(str) {
+				const buf = new TextEncoder().encode(str);
+				const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+				return Array.from(new Uint8Array(hashBuf))
+					.map((b) => b.toString(16).padStart(2, '0'))
+					.join('');
+			}
+			function hideSkeleton() {
+				const sk = $('loading-skeleton');
+				if (sk) sk.classList.add('hidden');
+				document.body.classList.add('ready');
+			}
+			function showPwGate() {
+				hideSkeleton();
+				$('gate-pw-real').classList.remove('hidden');
+				$('gate-pat').classList.add('hidden');
+				$('app').classList.add('hidden');
+				setTimeout(() => $('pw').focus(), 50);
+			}
+			function showPatGate() {
+				hideSkeleton();
+				$('gate-pw-real').classList.add('hidden');
+				$('gate-pat').classList.remove('hidden');
+				$('app').classList.add('hidden');
+				setTimeout(() => $('pat').focus(), 50);
+			}
+			let _autoRefreshDone = false;
+			function showApp() {
+				hideSkeleton();
+				$('gate-pw-real').classList.add('hidden');
+				$('gate-pat').classList.add('hidden');
+				$('app').classList.remove('hidden');
+				ensureDatalist();
+				renderActiveTab();
+				// Авто-рефреш списка с GitHub один раз при входе (если есть PAT):
+				// мгновенный first paint идёт из встроенного снэпшота, потом
+				// тихо реконсилируем с реальным состоянием репо.
+				if (!_autoRefreshDone && localStorage.getItem(LS_PAT_KEY)) {
+					_autoRefreshDone = true;
+					refreshListFromGitHub({ auto: true });
+				}
+			}
+			async function checkPassword() {
+				const v = $('pw').value;
+				const hash = await sha256Hex(v);
+				if (hash === PASSWORD_SHA256) {
+					sessionStorage.setItem(LS_PW_OK_KEY, '1');
+					$('pw-err').textContent = '';
+					afterPasswordOk();
+				} else {
+					$('pw-err').textContent = 'неверный пароль';
+				}
+			}
+			function afterPasswordOk() {
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (pat) showApp(); else showPatGate();
+			}
+
+			$('pw-btn').addEventListener('click', checkPassword);
+			$('pw').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPassword(); });
+
+			// Проверка валидности PAT через GET репозитория
+			async function verifyPat(pat) {
+				const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+				try {
+					const r = await fetch(url, {
+						headers: {
+							Authorization: 'token ' + pat,
+							Accept: 'application/vnd.github+json',
+						},
+					});
+					if (r.status === 200) return { ok: true };
+					if (r.status === 401) return { ok: false, code: 401, msg: 'токен невалидный' };
+					if (r.status === 403 || r.status === 404) return {
+						ok: false, code: r.status,
+						msg: 'токен валидный, но нет доступа к репо (нужен scope: repo, или Contents:write для fine-grained)',
+					};
+					return { ok: false, code: r.status, msg: 'неожиданный статус ' + r.status };
+				} catch (e) {
+					return { ok: null, networkErr: true, msg: 'не смог проверить (нет сети?)' };
+				}
+			}
+
+			$('pat-btn').addEventListener('click', async () => {
+				const v = $('pat').value.trim();
+				if (!v) { $('pat-err').textContent = 'пусто'; return; }
+				$('pat-err').textContent = '';
+				$('pat-btn').disabled = true;
+				$('pat-checking').classList.remove('hidden');
+				const res = await verifyPat(v);
+				$('pat-checking').classList.add('hidden');
+				$('pat-btn').disabled = false;
+				if (res.ok === true) {
+					localStorage.setItem(LS_PAT_KEY, v);
+					showApp();
+				} else if (res.networkErr) {
+					localStorage.setItem(LS_PAT_KEY, v);
+					$('pat-err').textContent = res.msg + ', сохранил';
+					setTimeout(() => showApp(), 800);
+				} else {
+					$('pat-err').textContent = res.msg || 'ошибка';
+				}
+			});
+			$('pat').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('pat-btn').click(); });
+			$('pat-skip').addEventListener('click', () => {
+				const v = localStorage.getItem(LS_PAT_KEY);
+				if (v) showApp(); else $('pat-err').textContent = 'в localStorage пусто, введи';
+			});
+			$('forget-pat').addEventListener('click', () => {
+				if (!confirm('удалить PAT из localStorage?')) return;
+				localStorage.removeItem(LS_PAT_KEY);
+				location.reload();
+			});
+			$('refresh-list').addEventListener('click', () => refreshListFromGitHub({ auto: false }));
+			// Bootstrap перенесён в самый конец скрипта — иначе `afterPasswordOk()`
+			// → showApp() → renderPosts() стрелял ДО декларации `let POSTS = []`
+			// (temporal dead zone → ReferenceError → пустая страница).
+
+			// ====================================================
+			// data layer
+			// ====================================================
+			let POSTS = [];
+			try {
+				POSTS = JSON.parse(document.getElementById('posts-data').textContent || '[]');
+			} catch (e) { POSTS = []; }
+
+			POSTS.forEach((p) => {
+				p._orig = (p.tags || []).slice();
+				p._tags = (p.tags || []).slice();
+				p._saveStatus = null;     // null | 'saving' | 'ok' | 'err'
+				p._saveMsg = '';
+				p._expanded = false;
+				p._selected = false;      // multi-select state
+				p._stale = false;         // true = файл переименован/удалён на сервере
+				p._isNew = false;         // true = появился после build-снэпшота
+				p._tagsLoaded = true;     // false = теги нового поста ещё не подтянуты
+			});
+			// сортировка по дате (desc)
+			POSTS.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+
+			function allTags() {
+				return Array.from(new Set(POSTS.flatMap((p) => p._tags)))
+					.sort((a, b) => a.localeCompare(b, 'ru'));
+			}
+			function tagCounts() {
+				const m = new Map();
+				for (const p of POSTS) {
+					for (const t of p._tags) m.set(t, (m.get(t) || 0) + 1);
+				}
+				return m;
+			}
+			function isDirty(p) {
+				if (p._tags.length !== p._orig.length) return true;
+				for (let i = 0; i < p._tags.length; i++) {
+					if (p._tags[i] !== p._orig[i]) return true;
+				}
+				return false;
+			}
+			function dirtyPosts() { return POSTS.filter(isDirty); }
+			function updateDirtyBadge() {
+				const n = dirtyPosts().length;
+				const el = $('dirty-count');
+				if (n === 0) {
+					el.textContent = 'нет правок';
+					el.classList.remove('has-dirty');
+				} else {
+					el.textContent = `несохр.: ${n}`;
+					el.classList.add('has-dirty');
+				}
+			}
+
+			// ====================================================
+			// LIVE REFRESH — реконсиляция списка постов с GitHub
+			// build-time снэпшот all-posts-tags.json устаревает между деплоями:
+			// новые посты не видны, переименованные имеют stale slug (→ 404),
+			// удалённые 404'ят. Тянем актуальный git-tree и сверяемся.
+			// ====================================================
+			let _refreshing = false;
+			let _lastRefreshTs = 0;
+
+			function slugFromBlogPath(path) {
+				// 'src/content/blog/foo-bar-457.md' → 'foo-bar-457'
+				const m = path.match(/^src\/content\/blog\/(.+)\.md$/);
+				return m ? m[1] : null;
+			}
+			function fmtTime(d) {
+				const pad = (x) => String(x).padStart(2, '0');
+				return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+			}
+			function setRefreshStatus(msg, cls) {
+				const el = $('refresh-status');
+				if (!el) return;
+				el.textContent = msg || '';
+				el.className = 'muted' + (cls ? ' ' + cls : '');
+			}
+
+			/* Тянет git-tree один раз (1 GET), фильтрует src/content/blog/*.md,
+			   реконсилирует POSTS:
+			     • удалённые на сервере посты выкидываем,
+			     • новые добавляем плейсхолдером (теги подтянутся лениво при раскрытии),
+			     • существующие — снимаем флаг stale.
+			   Теги существующих НЕ перегружаем здесь (это N GET'ов) — они и так
+			   подтягиваются по refreshLiveTags() при раскрытии конкретного поста. */
+			async function refreshListFromGitHub(opts) {
+				opts = opts || {};
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) {
+					if (!opts.auto) setRefreshStatus('нет PAT — нечем авторизоваться', 'err');
+					return;
+				}
+				if (_refreshing) return;
+				_refreshing = true;
+				const btn = $('refresh-list');
+				if (btn) btn.disabled = true;
+				setRefreshStatus('синхронизирую с GitHub…', 'syncing');
+				try {
+					const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${BRANCH}?recursive=1&_=` + Date.now();
+					const r = await fetch(url, {
+						headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+						cache: 'no-store',
+					});
+					if (!r.ok) {
+						let detail = '';
+						if (r.status === 401 || r.status === 403) detail = 'PAT истёк или нет доступа';
+						else if (r.status === 404) detail = 'репо/ветка не найдены';
+						else detail = 'статус ' + r.status;
+						setRefreshStatus('не обновил: ' + detail, 'err');
+						return;
+					}
+					const data = await r.json();
+					const tree = Array.isArray(data.tree) ? data.tree : [];
+					// На огромных репо git-tree может прийти обрезанным (truncated) —
+					// тогда liveSlugs неполные, и удалять «отсутствующие» посты опасно.
+					const truncated = data.truncated === true;
+					// Живые slug'и блог-постов
+					const liveSlugs = new Set();
+					for (const node of tree) {
+						if (node.type !== 'blob') continue;
+						const slug = slugFromBlogPath(node.path || '');
+						if (slug) liveSlugs.add(slug);
+					}
+					if (liveSlugs.size === 0) {
+						setRefreshStatus('GitHub вернул пустой tree — список не тронут', 'err');
+						return;
+					}
+
+					const bySlug = new Map(POSTS.map((p) => [p.slug, p]));
+					let added = 0, removed = 0, unstaled = 0;
+
+					// 1) Новые посты (есть на сервере, нет в снэпшоте) → плейсхолдеры
+					for (const slug of liveSlugs) {
+						if (bySlug.has(slug)) continue;
+						const np = {
+							slug,
+							title: slug,            // настоящий title подтянем при раскрытии
+							pubDate: '',
+							tags: [],
+							_orig: [],
+							_tags: [],
+							_saveStatus: null,
+							_saveMsg: '',
+							_expanded: false,
+							_selected: false,
+							_stale: false,
+							_isNew: true,
+							_tagsLoaded: false,     // лениво при раскрытии
+						};
+						POSTS.push(np);
+						bySlug.set(slug, np);
+						added++;
+					}
+
+					// 2) Удалённые на сервере → выкидываем (но НЕ выкидываем dirty —
+					//    их пометим stale, чтобы юзер не потерял несохранённую правку).
+					//    При truncated tree удаление НЕ делаем (список неполный).
+					if (!truncated) {
+						const keep = [];
+						for (const p of POSTS) {
+							if (liveSlugs.has(p.slug)) {
+								if (p._stale) { p._stale = false; unstaled++; }
+								keep.push(p);
+							} else if (isDirty(p)) {
+								// несохранённые правки на удалённый файл — не теряем, метим stale
+								p._stale = true;
+								keep.push(p);
+							} else {
+								removed++;
+							}
+						}
+						POSTS = keep;
+					}
+					POSTS.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+
+					_lastRefreshTs = Date.now();
+					ensureDatalist();
+					renderActiveTab();
+
+					const parts = [];
+					if (added) parts.push(`+${added} нов.`);
+					if (removed) parts.push(`−${removed} удал.`);
+					if (unstaled) parts.push(`${unstaled} восстановл.`);
+					if (truncated) parts.push('tree обрезан, удал. пропущены');
+					const summary = parts.length ? ' (' + parts.join(', ') + ')' : ' (без изменений)';
+					setRefreshStatus('обновлено: ' + fmtTime(new Date(_lastRefreshTs)) + summary, '');
+				} catch (e) {
+					setRefreshStatus('не обновил: нет сети?', 'err');
+				} finally {
+					_refreshing = false;
+					if (btn) btn.disabled = false;
+				}
+			}
+
+			// ====================================================
+			// datalist (autocomplete для тегов)
+			// ====================================================
+			function ensureDatalist() {
+				let dl = document.getElementById('all-tags-datalist');
+				if (!dl) {
+					dl = document.createElement('datalist');
+					dl.id = 'all-tags-datalist';
+					document.body.appendChild(dl);
+				}
+				dl.replaceChildren();
+				for (const t of allTags()) {
+					const opt = document.createElement('option');
+					opt.value = t;
+					dl.appendChild(opt);
+				}
+				if (typeof invalidateTopTagsCache === 'function') invalidateTopTagsCache();
+			}
+
+			// ====================================================
+			// tabs
+			// ====================================================
+			let activeTab = 'posts';
+			document.querySelectorAll('.tab').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
+					btn.classList.add('active');
+					activeTab = btn.dataset.tab;
+					$('tab-posts').classList.toggle('hidden', activeTab !== 'posts');
+					$('tab-tags').classList.toggle('hidden', activeTab !== 'tags');
+					renderActiveTab();
+				});
+			});
+			function renderActiveTab() {
+				if (activeTab === 'posts') renderPosts();
+				else renderTags();
+				updateDirtyBadge();
+				if (typeof updateBulkBar === 'function') updateBulkBar();
+			}
+
+			// ====================================================
+			// POSTS TAB
+			// ====================================================
+			let postsSearch = '';
+			let postsFilter = 'all';   // 'all' | 'none' | 'few' | 'many'
+			$('search-posts').addEventListener('input', (e) => {
+				postsSearch = e.target.value.trim().toLowerCase();
+				renderPosts();
+			});
+			document.querySelectorAll('#filter-chips button').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					document.querySelectorAll('#filter-chips button').forEach((b) => b.classList.remove('active'));
+					btn.classList.add('active');
+					postsFilter = btn.dataset.filter;
+					renderPosts();
+				});
+			});
+			function postMatches(p, q) {
+				if (!q) return true;
+				if ((p.slug || '').toLowerCase().includes(q)) return true;
+				if ((p.title || '').toLowerCase().includes(q)) return true;
+				if (p._tags.some((t) => t.toLowerCase().includes(q))) return true;
+				return false;
+			}
+			function postPassesFilter(p, f) {
+				const n = p._tags.length;
+				if (f === 'all') return true;
+				if (f === 'none') return n === 0;
+				if (f === 'few') return n >= 1 && n <= 2;
+				if (f === 'many') return n >= 5;
+				return true;
+			}
+			function renderPosts() {
+				const root = $('posts-list');
+				const visible = POSTS.filter((p) =>
+					postMatches(p, postsSearch) && postPassesFilter(p, postsFilter)
+				);
+				if (!visible.length) {
+					const empty = document.createElement('p');
+					empty.className = 'muted';
+					empty.textContent = 'ничего не нашёл';
+					root.replaceChildren(empty);
+					updateBulkBar();
+					return;
+				}
+				const frag = document.createDocumentFragment();
+				for (const p of visible) frag.appendChild(renderPostNode(p));
+				root.replaceChildren(frag);
+				updateBulkBar();
+			}
+
+			// ====================================================
+			// Multi-select & bulk bar
+			// ====================================================
+			function selectedPosts() { return POSTS.filter((p) => p._selected); }
+			function updateBulkBar() {
+				const sel = selectedPosts();
+				const bar = $('bulk-bar');
+				if (sel.length === 0 || activeTab !== 'posts') {
+					bar.classList.add('hidden');
+					return;
+				}
+				bar.classList.remove('hidden');
+				$('bulk-count').textContent = `выбрано: ${sel.length}`;
+			}
+			$('bulk-clear').addEventListener('click', () => {
+				POSTS.forEach((p) => { p._selected = false; });
+				$('bulk-tag-input').value = '';
+				$('bulk-status').textContent = '';
+				$('bulk-status').className = 'bulk-status';
+				renderPosts();
+			});
+			async function bulkApplyTag() {
+				const tag = $('bulk-tag-input').value.trim();
+				if (!tag) { $('bulk-status').textContent = 'пусто'; $('bulk-status').className = 'bulk-status err'; return; }
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) { alert('PAT нет в localStorage'); return; }
+				const sel = selectedPosts();
+				const targets = sel.filter((p) => !p._tags.includes(tag));
+				if (!targets.length) {
+					$('bulk-status').textContent = 'у всех уже есть';
+					$('bulk-status').className = 'bulk-status';
+					return;
+				}
+				$('bulk-apply').disabled = true;
+				$('bulk-clear').disabled = true;
+				let ok = 0;
+				const fails = [];
+				for (let i = 0; i < targets.length; i++) {
+					const p = targets[i];
+					$('bulk-status').textContent = `${i + 1}/${targets.length}…`;
+					$('bulk-status').className = 'bulk-status';
+					p._tags.push(tag);
+					await savePost(p, pat, { silent: true });
+					if (p._saveStatus === 'ok') ok++;
+					else {
+						fails.push({ slug: p.slug, title: p.title, msg: p._saveMsg || 'ошибка' });
+						// rollback на ошибке
+						p._tags = p._tags.filter((t) => t !== tag);
+					}
+				}
+				$('bulk-apply').disabled = false;
+				$('bulk-clear').disabled = false;
+				$('bulk-status').textContent = fails.length === 0 ? `${ok}/${targets.length} ✓` : `${ok} ок, ${fails.length} err`;
+				$('bulk-status').className = 'bulk-status ' + (fails.length === 0 ? 'ok' : 'err');
+				$('bulk-status').title = fails.length ? fails.map((f) => `${f.slug}: ${f.msg}`).join('\n') : '';
+				ensureDatalist();
+				if (fails.length === 0) {
+					$('bulk-tag-input').value = '';
+				}
+				renderPosts();
+			}
+			$('bulk-apply').addEventListener('click', bulkApplyTag);
+			$('bulk-tag-input').addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') { e.preventDefault(); bulkApplyTag(); }
+			});
+
+			function renderPostNode(p) {
+				const el = document.createElement('section');
+				el.className = 'post';
+				if (isDirty(p)) el.classList.add('dirty');
+				if (p._expanded) el.classList.add('expanded');
+				if (p._stale) el.classList.add('stale');
+				el.dataset.slug = p.slug;
+
+				// Head row: checkbox + body
+				const head = document.createElement('div');
+				head.className = 'post-head';
+
+				const cbWrap = document.createElement('div');
+				cbWrap.className = 'post-cb-wrap';
+				const cb = document.createElement('input');
+				cb.type = 'checkbox';
+				cb.className = 'post-cb';
+				cb.checked = !!p._selected;
+				cb.title = 'выбрать для bulk-операций';
+				cb.addEventListener('click', (e) => e.stopPropagation());
+				cb.addEventListener('change', (e) => {
+					p._selected = cb.checked;
+					// если включили чекбокс — закрываем editor (избегаем confusion)
+					if (cb.checked && p._expanded) {
+						p._expanded = false;
+					}
+					renderPosts();
+				});
+				cbWrap.appendChild(cb);
+				head.appendChild(cbWrap);
+
+				const body = document.createElement('div');
+				body.className = 'post-body';
+
+				const title = document.createElement('div');
+				title.className = 'post-title';
+				title.textContent = p.title || p.slug;
+				if (p._isNew) {
+					const nb = document.createElement('span');
+					nb.className = 'post-badge-new';
+					nb.textContent = 'нов.';
+					nb.title = 'появился на сервере после последнего деплоя';
+					title.appendChild(document.createTextNode(' '));
+					title.appendChild(nb);
+				}
+				body.appendChild(title);
+
+				const meta = document.createElement('div');
+				meta.className = 'post-meta';
+				const dt = document.createElement('span');
+				dt.textContent = p.pubDate || '';
+				meta.appendChild(dt);
+				const link = document.createElement('a');
+				link.href = `${base}/blog/${p.slug}/`;
+				link.target = '_blank';
+				link.rel = 'noopener';
+				link.textContent = p.slug;
+				link.addEventListener('click', (e) => e.stopPropagation());
+				meta.appendChild(link);
+				if (!p._tagsLoaded && !p._expanded) {
+					const lz = document.createElement('span');
+					lz.className = 'post-badge-lazy';
+					lz.textContent = 'теги загрузятся при открытии';
+					meta.appendChild(lz);
+				}
+				appendSaveStatus(meta, p);
+				body.appendChild(meta);
+
+				if (!p._expanded) {
+					// compact chips
+					const chips = document.createElement('div');
+					chips.className = 'chips';
+					p._tags.forEach((tag) => {
+						const c = document.createElement('span');
+						c.className = 'chip compact';
+						c.textContent = tag;
+						chips.appendChild(c);
+					});
+					body.appendChild(chips);
+				} else {
+					// expanded editor
+					const editor = document.createElement('div');
+					editor.className = 'editor';
+					const chips = document.createElement('div');
+					chips.className = 'chips';
+					p._tags.forEach((tag, idx) => chips.appendChild(renderChip(p, tag, idx)));
+					const input = document.createElement('input');
+					input.type = 'text';
+					input.className = 'add-input';
+					input.placeholder = '+ тег';
+					input.setAttribute('list', 'all-tags-datalist');
+					input.addEventListener('click', (e) => e.stopPropagation());
+					input.addEventListener('keydown', (e) => {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							const v = input.value.trim();
+							if (!v) return;
+							if (p._tags.includes(v)) { input.value = ''; return; }
+							p._tags.push(v);
+							input.value = '';
+							rerenderPost(p, el, true);
+						} else if (e.key === 'Escape') {
+							input.value = '';
+							input.blur();
+						}
+					});
+					chips.appendChild(input);
+					editor.appendChild(chips);
+
+					// quick-add bar
+					const topTags = topCommonTags(10);
+					if (topTags.length) {
+						const qa = document.createElement('div');
+						qa.className = 'quick-add-bar';
+						const lbl = document.createElement('span');
+						lbl.className = 'qa-label';
+						lbl.textContent = 'быстро:';
+						qa.appendChild(lbl);
+						topTags.forEach((t) => {
+							const b = document.createElement('button');
+							b.type = 'button';
+							b.className = 'quick-add-chip';
+							b.textContent = t;
+							if (p._tags.includes(t)) b.classList.add('dim');
+							b.addEventListener('click', (e) => {
+								e.stopPropagation();
+								if (p._tags.includes(t)) return;
+								p._tags.push(t);
+								rerenderPost(p, el);
+							});
+							qa.appendChild(b);
+						});
+						editor.appendChild(qa);
+					}
+
+					const actions = document.createElement('div');
+					actions.className = 'editor-actions';
+					const saveBtn = document.createElement('button');
+					saveBtn.className = 'primary';
+					saveBtn.type = 'button';
+					saveBtn.textContent = 'сохранить';
+					saveBtn.disabled = !isDirty(p);
+					saveBtn.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						const pat = localStorage.getItem(LS_PAT_KEY);
+						if (!pat) { alert('PAT нет в localStorage'); return; }
+						await savePost(p, pat);
+						ensureDatalist();
+					});
+					const cancelBtn = document.createElement('button');
+					cancelBtn.className = 'ghost';
+					cancelBtn.type = 'button';
+					cancelBtn.textContent = 'отмена';
+					cancelBtn.disabled = !isDirty(p);
+					cancelBtn.addEventListener('click', (e) => {
+						e.stopPropagation();
+						p._tags = p._orig.slice();
+						p._saveStatus = null;
+						rerenderPost(p, el);
+					});
+					actions.appendChild(saveBtn);
+					actions.appendChild(cancelBtn);
+					editor.appendChild(actions);
+					body.appendChild(editor);
+				}
+
+				head.appendChild(body);
+				el.appendChild(head);
+
+				// клик по карточке — toggle expanded (другие схлопываются).
+				// Если post уже selected — снимаем selection вместо expand, чтобы избежать confusion.
+				el.addEventListener('click', (e) => {
+					if (e.target.closest('button, input, a, label')) return;
+					if (p._expanded) {
+						p._expanded = false;
+						rerenderPost(p, el);
+					} else {
+						// auto-uncheck on expand (если выбран — снимаем)
+						if (p._selected) p._selected = false;
+						POSTS.forEach((other) => { if (other !== p) other._expanded = false; });
+						p._expanded = true;
+						renderPosts();
+						// Live-refresh тегов из репо (один раз): build-time снэпшот
+						// мог устареть (LLM-теги добавились после), показываем реальные.
+						refreshLiveTags(p);
+					}
+				});
+
+				return el;
+			}
+
+			// top-N самые частые теги (для quick-add bar)
+			let _topTagsCache = null;
+			let _topTagsCacheKey = '';
+			function topCommonTags(n) {
+				const counts = tagCounts();
+				const key = counts.size + ':' + n;
+				if (_topTagsCache && _topTagsCacheKey === key) return _topTagsCache;
+				const arr = Array.from(counts.entries())
+					.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ru'))
+					.slice(0, n)
+					.map(([t]) => t);
+				_topTagsCache = arr;
+				_topTagsCacheKey = key;
+				return arr;
+			}
+			function invalidateTopTagsCache() { _topTagsCache = null; _topTagsCacheKey = ''; }
+
+			function appendSaveStatus(meta, p) {
+				if (p._saveStatus === 'ok') {
+					const s = document.createElement('span');
+					s.className = 'save-status ok';
+					s.textContent = '✓ сохранено';
+					meta.appendChild(s);
+				} else if (p._saveStatus === 'err') {
+					const isAuth = p._saveCode === 'auth' || isPatAuthErr(p._saveMsg);
+					const s = document.createElement('span');
+					s.className = 'save-status err';
+					s.textContent = '✗ ' + (p._saveMsg || 'ошибка');
+					s.title = p._saveMsg || '';
+					meta.appendChild(s);
+					if (isAuth) {
+						const r = document.createElement('button');
+						r.type = 'button';
+						r.className = 'pat-refresh-inline';
+						r.textContent = 'обновить PAT';
+						r.addEventListener('click', (e) => {
+							e.stopPropagation();
+							localStorage.removeItem(LS_PAT_KEY);
+							showPatGate();
+						});
+						meta.appendChild(r);
+					}
+				} else if (p._saveStatus === 'saving') {
+					const s = document.createElement('span');
+					s.className = 'save-status saving';
+					s.textContent = '… сохраняю';
+					meta.appendChild(s);
+				}
+			}
+
+			function renderChip(p, tag, idx) {
+				const chip = document.createElement('span');
+				chip.className = 'chip';
+				chip.textContent = tag;
+				const btn = document.createElement('button');
+				btn.type = 'button';
+				btn.title = 'убрать';
+				btn.textContent = '×';
+				btn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					p._tags.splice(idx, 1);
+					rerenderPost(p, chip.closest('.post'), true);
+				});
+				chip.appendChild(btn);
+				return chip;
+			}
+
+			function rerenderPost(p, oldEl, keepFocus) {
+				const fresh = renderPostNode(p);
+				oldEl.replaceWith(fresh);
+				updateDirtyBadge();
+				if (keepFocus) {
+					const inp = fresh.querySelector('.add-input');
+					if (inp) inp.focus();
+				}
+			}
+
+			function rerenderPostInPlace(p) {
+				const node = document.querySelector(`#posts-list .post[data-slug="${cssEscape(p.slug)}"]`);
+				if (node) rerenderPost(p, node);
+				else updateDirtyBadge();
+			}
+			function cssEscape(s) {
+				if (window.CSS && CSS.escape) return CSS.escape(s);
+				return String(s).replace(/[^a-zA-Z0-9_-]/g, (c) => '\\' + c);
+			}
+
+			// ====================================================
+			// TAGS TAB
+			// ====================================================
+			let tagsSearch = '';
+			let expandedTag = null;       // string | null
+			let addOthersOpen = false;    // collapsible подсекция
+			let addOthersFilter = '';
+			let renameMode = false;       // true if rename input active
+			let mergeMode = false;        // true if merge input active
+
+			$('search-tags').addEventListener('input', (e) => {
+				tagsSearch = e.target.value.trim().toLowerCase();
+				renderTags();
+			});
+
+			function renderTags() {
+				const root = $('tags-list');
+				const counts = tagCounts();
+				let entries = Array.from(counts.entries());
+				if (tagsSearch) entries = entries.filter(([t]) => t.toLowerCase().includes(tagsSearch));
+				entries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ru'));
+
+				if (!entries.length) {
+					const empty = document.createElement('p');
+					empty.className = 'muted';
+					empty.textContent = 'тегов не найдено';
+					root.replaceChildren(empty);
+					return;
+				}
+
+				const frag = document.createDocumentFragment();
+				for (const [tag, count] of entries) frag.appendChild(renderTagRow(tag, count));
+				root.replaceChildren(frag);
+			}
+
+			function renderTagRow(tag, count) {
+				const row = document.createElement('section');
+				row.className = 'tag-row';
+				row.dataset.tag = tag;
+				const isExpanded = expandedTag === tag;
+				if (isExpanded) row.classList.add('expanded');
+
+				const head = document.createElement('div');
+				head.className = 'tag-row-head';
+				const name = document.createElement('div');
+				name.className = 'tag-name';
+				name.innerHTML = `<span class="chevron">›</span>`;
+				const tspan = document.createElement('span');
+				tspan.textContent = tag;
+				name.appendChild(tspan);
+				head.appendChild(name);
+				const cnt = document.createElement('div');
+				cnt.className = 'tag-count';
+				cnt.textContent = `× ${count} ${plural(count, 'пост', 'поста', 'постов')}`;
+				head.appendChild(cnt);
+				row.appendChild(head);
+
+				head.addEventListener('click', () => {
+					if (isExpanded) {
+						expandedTag = null;
+					} else {
+						expandedTag = tag;
+						renameMode = false;
+						mergeMode = false;
+						addOthersOpen = false;
+						addOthersFilter = '';
+					}
+					renderTags();
+				});
+
+				if (isExpanded) {
+					row.appendChild(renderTagPanel(tag, count));
+				}
+
+				return row;
+			}
+
+			function plural(n, one, few, many) {
+				const mod10 = n % 10;
+				const mod100 = n % 100;
+				if (mod10 === 1 && mod100 !== 11) return one;
+				if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+				return many;
+			}
+
+			function renderTagPanel(tag, count) {
+				const panel = document.createElement('div');
+				panel.className = 'tag-panel';
+				panel.addEventListener('click', (e) => e.stopPropagation());
+
+				// Actions
+				const actions = document.createElement('div');
+				actions.className = 'tag-actions';
+				const renameBtn = document.createElement('button');
+				renameBtn.className = 'ghost';
+				renameBtn.type = 'button';
+				renameBtn.textContent = '✎ переименовать';
+				renameBtn.addEventListener('click', () => {
+					renameMode = true;
+					mergeMode = false;
+					renderTags();
+				});
+				const mergeBtn = document.createElement('button');
+				mergeBtn.className = 'ghost';
+				mergeBtn.type = 'button';
+				mergeBtn.textContent = '⇄ слить с другим';
+				mergeBtn.addEventListener('click', () => {
+					mergeMode = true;
+					renameMode = false;
+					renderTags();
+				});
+				const deleteBtn = document.createElement('button');
+				deleteBtn.className = 'ghost danger';
+				deleteBtn.type = 'button';
+				deleteBtn.textContent = '🗑 удалить везде';
+				deleteBtn.addEventListener('click', () => deleteTagEverywhere(tag, count));
+				actions.appendChild(renameBtn);
+				actions.appendChild(mergeBtn);
+				actions.appendChild(deleteBtn);
+				panel.appendChild(actions);
+
+				// Rename form (inline)
+				if (renameMode) {
+					const form = document.createElement('div');
+					form.className = 'rename-form';
+					const inp = document.createElement('input');
+					inp.type = 'text';
+					inp.value = tag;
+					inp.placeholder = 'новое имя';
+					const ok = document.createElement('button');
+					ok.className = 'primary';
+					ok.type = 'button';
+					ok.textContent = 'переименовать';
+					const cancel = document.createElement('button');
+					cancel.className = 'ghost';
+					cancel.type = 'button';
+					cancel.textContent = 'отмена';
+					const submit = () => {
+						const newName = inp.value.trim();
+						if (!newName || newName === tag) { renameMode = false; renderTags(); return; }
+						renameTagEverywhere(tag, newName, count);
+					};
+					ok.addEventListener('click', submit);
+					inp.addEventListener('keydown', (e) => {
+						if (e.key === 'Enter') { e.preventDefault(); submit(); }
+						else if (e.key === 'Escape') { renameMode = false; renderTags(); }
+					});
+					cancel.addEventListener('click', () => { renameMode = false; renderTags(); });
+					form.appendChild(inp);
+					form.appendChild(ok);
+					form.appendChild(cancel);
+					panel.appendChild(form);
+					setTimeout(() => { inp.focus(); inp.select(); }, 30);
+				}
+
+				// Merge form (inline)
+				if (mergeMode) {
+					const form = document.createElement('div');
+					form.className = 'rename-form';
+					const lbl = document.createElement('span');
+					lbl.className = 'muted';
+					lbl.textContent = 'слить в тег:';
+					lbl.style.flex = '0 0 auto';
+					const inp = document.createElement('input');
+					inp.type = 'text';
+					inp.placeholder = 'тег-приёмник';
+					inp.setAttribute('list', 'all-tags-datalist');
+					const ok = document.createElement('button');
+					ok.className = 'primary';
+					ok.type = 'button';
+					ok.textContent = 'слить';
+					const cancel = document.createElement('button');
+					cancel.className = 'ghost';
+					cancel.type = 'button';
+					cancel.textContent = 'отмена';
+					const submit = () => {
+						const target = inp.value.trim();
+						if (!target || target === tag) { mergeMode = false; renderTags(); return; }
+						mergeTagInto(tag, target);
+					};
+					ok.addEventListener('click', submit);
+					inp.addEventListener('keydown', (e) => {
+						if (e.key === 'Enter') { e.preventDefault(); submit(); }
+						else if (e.key === 'Escape') { mergeMode = false; renderTags(); }
+					});
+					cancel.addEventListener('click', () => { mergeMode = false; renderTags(); });
+					form.appendChild(lbl);
+					form.appendChild(inp);
+					form.appendChild(ok);
+					form.appendChild(cancel);
+					panel.appendChild(form);
+					setTimeout(() => { inp.focus(); }, 30);
+				}
+
+				// Progress
+				const prog = document.createElement('p');
+				prog.className = 'batch-progress';
+				prog.id = `tag-progress-${cssEscape(tag)}`;
+				panel.appendChild(prog);
+
+				// Section: "в этих постах"
+				const sect1 = document.createElement('div');
+				sect1.className = 'tag-section';
+				const h1 = document.createElement('h4');
+				h1.textContent = `в этих постах (${count})`;
+				sect1.appendChild(h1);
+				const hasTag = POSTS.filter((p) => p._tags.includes(tag));
+				hasTag.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+				const list1 = document.createElement('div');
+				hasTag.forEach((p) => list1.appendChild(renderMiniPost(p, tag, 'remove')));
+				sect1.appendChild(list1);
+				panel.appendChild(sect1);
+
+				// Section: "+ добавить в другие посты" (collapsible)
+				const sect2 = document.createElement('div');
+				sect2.className = 'tag-section';
+				const h2 = document.createElement('h4');
+				h2.className = 'clickable';
+				const without = POSTS.filter((p) => !p._tags.includes(tag));
+				h2.innerHTML = `+ добавить в другие посты (${without.length})<span class="toggle-arrow">${addOthersOpen ? '▾' : '▸'}</span>`;
+				h2.addEventListener('click', () => {
+					addOthersOpen = !addOthersOpen;
+					renderTags();
+				});
+				sect2.appendChild(h2);
+				if (addOthersOpen) {
+					const sf = document.createElement('input');
+					sf.className = 'subfilter';
+					sf.type = 'search';
+					sf.placeholder = 'фильтр постов…';
+					sf.value = addOthersFilter;
+					sf.addEventListener('input', (e) => {
+						addOthersFilter = e.target.value.trim().toLowerCase();
+						// частичный rerender: список — детям, h2 счётчик не меняется
+						const list = sect2.querySelector('.others-list');
+						if (list) {
+							list.replaceChildren(...renderOthersList(tag));
+						}
+					});
+					sect2.appendChild(sf);
+					const list2 = document.createElement('div');
+					list2.className = 'others-list';
+					renderOthersList(tag).forEach((n) => list2.appendChild(n));
+					sect2.appendChild(list2);
+				}
+				panel.appendChild(sect2);
+
+				return panel;
+			}
+
+			function renderOthersList(tag) {
+				let posts = POSTS.filter((p) => !p._tags.includes(tag));
+				if (addOthersFilter) {
+					posts = posts.filter((p) =>
+						(p.title || '').toLowerCase().includes(addOthersFilter) ||
+						(p.slug || '').toLowerCase().includes(addOthersFilter)
+					);
+				}
+				posts.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+				posts = posts.slice(0, 200);
+				return posts.map((p) => renderMiniPost(p, tag, 'add'));
+			}
+
+			function renderMiniPost(p, tag, mode) {
+				const row = document.createElement('div');
+				row.className = 'mini-post';
+				const titleWrap = document.createElement('div');
+				titleWrap.className = 'mini-title';
+				const a = document.createElement('a');
+				a.href = `${base}/blog/${p.slug}/`;
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.textContent = p.title || p.slug;
+				titleWrap.appendChild(a);
+				row.appendChild(titleWrap);
+				const dt = document.createElement('span');
+				dt.className = 'mini-date';
+				dt.textContent = p.pubDate || '';
+				row.appendChild(dt);
+
+				if (p._saveStatus === 'saving') {
+					const s = document.createElement('span');
+					s.className = 'save-status saving';
+					s.textContent = '…';
+					row.appendChild(s);
+				} else if (p._saveStatus === 'ok') {
+					const s = document.createElement('span');
+					s.className = 'save-status ok';
+					s.textContent = '✓';
+					row.appendChild(s);
+				} else if (p._saveStatus === 'err') {
+					const s = document.createElement('span');
+					s.className = 'save-status err';
+					s.textContent = '✗';
+					s.title = p._saveMsg || '';
+					row.appendChild(s);
+				}
+
+				const btn = document.createElement('button');
+				btn.type = 'button';
+				if (mode === 'remove') {
+					btn.className = 'icon';
+					btn.title = 'убрать тег у этого поста';
+					btn.textContent = '×';
+					btn.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						const pat = localStorage.getItem(LS_PAT_KEY);
+						if (!pat) { alert('PAT нет в localStorage'); return; }
+						const idx = p._tags.indexOf(tag);
+						if (idx < 0) return;
+						p._tags.splice(idx, 1);
+						await savePost(p, pat, { silent: true });
+						if (p._saveStatus === 'err') {
+							// rollback
+							p._tags.splice(idx, 0, tag);
+						}
+						ensureDatalist();
+						renderTags();
+					});
+				} else {
+					btn.className = 'ghost';
+					btn.textContent = '+ добавить';
+					btn.addEventListener('click', async (e) => {
+						e.stopPropagation();
+						const pat = localStorage.getItem(LS_PAT_KEY);
+						if (!pat) { alert('PAT нет в localStorage'); return; }
+						if (p._tags.includes(tag)) return;
+						p._tags.push(tag);
+						await savePost(p, pat, { silent: true });
+						if (p._saveStatus === 'err') {
+							p._tags = p._tags.filter((t) => t !== tag);
+						}
+						ensureDatalist();
+						renderTags();
+					});
+				}
+				row.appendChild(btn);
+				return row;
+			}
+
+			// ====================================================
+			// Confirm modal с превью затронутых постов
+			// ====================================================
+			function confirmModal(title, posts) {
+				return new Promise((resolve) => {
+					const root = $('modal-root');
+					const overlay = document.createElement('div');
+					overlay.className = 'modal-overlay';
+					const modal = document.createElement('div');
+					modal.className = 'modal';
+
+					const h = document.createElement('h3');
+					h.textContent = title;
+					modal.appendChild(h);
+
+					const list = document.createElement('div');
+					list.className = 'modal-list';
+					const max = 15;
+					const shown = posts.slice(0, max);
+					shown.forEach((p) => {
+						const row = document.createElement('div');
+						row.className = 'mtitle';
+						row.textContent = p.title || p.slug;
+						list.appendChild(row);
+					});
+					if (posts.length > max) {
+						const more = document.createElement('div');
+						more.className = 'more';
+						more.textContent = `…и ещё ${posts.length - max}`;
+						list.appendChild(more);
+					}
+					if (!posts.length) {
+						const empty = document.createElement('div');
+						empty.className = 'more';
+						empty.textContent = '(нет затронутых постов)';
+						list.appendChild(empty);
+					}
+					modal.appendChild(list);
+
+					const acts = document.createElement('div');
+					acts.className = 'modal-actions';
+					const cancel = document.createElement('button');
+					cancel.className = 'ghost';
+					cancel.type = 'button';
+					cancel.textContent = 'отмена';
+					const ok = document.createElement('button');
+					ok.className = 'primary';
+					ok.type = 'button';
+					ok.textContent = 'подтвердить';
+					const cleanup = (val) => {
+						overlay.remove();
+						document.removeEventListener('keydown', onKey);
+						resolve(val);
+					};
+					const onKey = (e) => {
+						if (e.key === 'Escape') cleanup(false);
+						if (e.key === 'Enter') cleanup(true);
+					};
+					cancel.addEventListener('click', () => cleanup(false));
+					ok.addEventListener('click', () => cleanup(true));
+					overlay.addEventListener('click', (e) => { if (e.target === overlay) cleanup(false); });
+					document.addEventListener('keydown', onKey);
+					acts.appendChild(cancel);
+					acts.appendChild(ok);
+					modal.appendChild(acts);
+					overlay.appendChild(modal);
+					root.appendChild(overlay);
+					setTimeout(() => ok.focus(), 30);
+				});
+			}
+
+			// Если в текстовом сообщении ошибки есть 401/403 — это auth-проблема с PAT
+			function isPatAuthErr(msg) {
+				return /\b(401|403)\b/.test(msg || '');
+			}
+
+			// Человекочитаемый итог batch-операции: «обновлено N, ошибок K: <пост> — <причина>»
+			function batchSummary(ok, fails, verb) {
+				verb = verb || 'обновлено';
+				if (!fails.length) return `${verb} ${ok} ✓`;
+				const first = fails.slice(0, 2)
+					.map((f) => `${(f.title || f.slug || '').slice(0, 28)} — ${f.msg}`)
+					.join('; ');
+				const more = fails.length > 2 ? ` (+ещё ${fails.length - 2})` : '';
+				return `${verb} ${ok}, ошибок ${fails.length}: ${first}${more}`;
+			}
+
+			// ====================================================
+			// Batch operations (rename / delete tag everywhere / merge)
+			// ====================================================
+			async function renameTagEverywhere(oldTag, newTag, count) {
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) { alert('PAT нет в localStorage'); return; }
+				const affected = POSTS.filter((p) => p._tags.includes(oldTag));
+				const confirmed = await confirmModal(
+					`Переименовать тег '${oldTag}' → '${newTag}' в ${affected.length} ${plural(affected.length, 'посте', 'постах', 'постах')}`,
+					affected,
+				);
+				if (!confirmed) return;
+				const prog = document.getElementById(`tag-progress-${cssEscape(oldTag)}`);
+				let ok = 0;
+				const fails = [];
+				for (let i = 0; i < affected.length; i++) {
+					const p = affected[i];
+					if (prog) prog.textContent = `обновляю ${i + 1}/${affected.length}…`;
+					// заменяем
+					p._tags = p._tags.map((t) => (t === oldTag ? newTag : t));
+					// дедуп (если newTag уже был)
+					p._tags = Array.from(new Set(p._tags));
+					await savePost(p, pat, { silent: true });
+					if (p._saveStatus === 'ok') ok++;
+					else fails.push({ slug: p.slug, title: p.title, msg: p._saveMsg || 'ошибка' });
+				}
+				renameMode = false;
+				// expandedTag → новый, если все ок; иначе остаёмся на старом
+				if (fails.length === 0) expandedTag = newTag;
+				ensureDatalist();
+				renderTags();
+				const finalProg = document.getElementById(`tag-progress-${cssEscape(fails.length === 0 ? newTag : oldTag)}`);
+				if (finalProg) {
+					finalProg.textContent = batchSummary(ok, fails, 'переименовано');
+					finalProg.className = 'batch-progress ' + (fails.length === 0 ? 'ok' : 'err');
+				}
+			}
+
+			async function deleteTagEverywhere(tag, count) {
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) { alert('PAT нет в localStorage'); return; }
+				const affected = POSTS.filter((p) => p._tags.includes(tag));
+				const confirmed = await confirmModal(
+					`Удалить тег '${tag}' из ${affected.length} ${plural(affected.length, 'поста', 'постов', 'постов')}`,
+					affected,
+				);
+				if (!confirmed) return;
+				const prog = document.getElementById(`tag-progress-${cssEscape(tag)}`);
+				let ok = 0;
+				const fails = [];
+				for (let i = 0; i < affected.length; i++) {
+					const p = affected[i];
+					if (prog) prog.textContent = `удаляю ${i + 1}/${affected.length}…`;
+					p._tags = p._tags.filter((t) => t !== tag);
+					await savePost(p, pat, { silent: true });
+					if (p._saveStatus === 'ok') ok++;
+					else fails.push({ slug: p.slug, title: p.title, msg: p._saveMsg || 'ошибка' });
+				}
+				if (fails.length === 0) expandedTag = null;
+				ensureDatalist();
+				renderTags();
+				// если тег полностью пропал из POSTS, panel'а больше нет — пишем в верхний статус
+				$('status-tags').textContent = fails.length === 0
+					? `тег '${tag}' удалён из ${ok} постов ✓`
+					: batchSummary(ok, fails, `тег '${tag}': удалено`);
+			}
+
+			async function mergeTagInto(fromTag, toTag) {
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) { alert('PAT нет в localStorage'); return; }
+				if (!toTag || toTag === fromTag) return;
+				const affected = POSTS.filter((p) => p._tags.includes(fromTag));
+				const confirmed = await confirmModal(
+					`Слить тег '${fromTag}' → '${toTag}' в ${affected.length} ${plural(affected.length, 'посте', 'постах', 'постах')}`,
+					affected,
+				);
+				if (!confirmed) return;
+				const prog = document.getElementById(`tag-progress-${cssEscape(fromTag)}`);
+				let ok = 0;
+				const fails = [];
+				for (let i = 0; i < affected.length; i++) {
+					const p = affected[i];
+					if (prog) prog.textContent = `сливаю ${i + 1}/${affected.length}…`;
+					if (p._tags.includes(toTag)) {
+						p._tags = p._tags.filter((t) => t !== fromTag);
+					} else {
+						p._tags = p._tags.map((t) => (t === fromTag ? toTag : t));
+					}
+					p._tags = Array.from(new Set(p._tags));
+					await savePost(p, pat, { silent: true });
+					if (p._saveStatus === 'ok') ok++;
+					else fails.push({ slug: p.slug, title: p.title, msg: p._saveMsg || 'ошибка' });
+				}
+				mergeMode = false;
+				if (fails.length === 0) expandedTag = toTag;
+				ensureDatalist();
+				renderTags();
+				const finalProg = document.getElementById(`tag-progress-${cssEscape(fails.length === 0 ? toTag : fromTag)}`);
+				if (finalProg) {
+					finalProg.textContent = fails.length === 0
+						? `готово ✓ — слито в '${toTag}' (${ok} постов)`
+						: batchSummary(ok, fails, `слито в '${toTag}'`);
+					finalProg.className = 'batch-progress ' + (fails.length === 0 ? 'ok' : 'err');
+				}
+			}
+
+			// ====================================================
+			// GitHub Contents API — save single post
+			// ====================================================
+			function tagsToFrontmatterValue(tags) {
+				return '[' + tags.map((t) => "'" + t.replace(/'/g, "''") + "'").join(', ') + ']';
+			}
+			function patchFrontmatterTags(md, newTags) {
+				const fmMatch = md.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+				if (!fmMatch) return null;
+				const fm = fmMatch[1];
+				const newTagsLine = 'tags: ' + tagsToFrontmatterValue(newTags);
+				let newFm;
+				if (/^tags:\s*\[[^\]]*\]/m.test(fm)) {
+					newFm = fm.replace(/^tags:\s*\[[^\]]*\]/m, newTagsLine);
+				} else if (/^pubDate:.*$/m.test(fm)) {
+					newFm = fm.replace(/^(pubDate:.*)$/m, '$1\n' + newTagsLine);
+				} else {
+					newFm = fm + '\n' + newTagsLine;
+				}
+				return md.replace(fmMatch[0], '---\n' + newFm + '\n---');
+			}
+			// UTF-8 safe base64 (русский, эмодзи)
+			function utf8ToBase64(s) {
+				const bytes = new TextEncoder().encode(s);
+				let bin = '';
+				for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+				return btoa(bin);
+			}
+			function base64ToUtf8(b64) {
+				const bin = atob(b64.replace(/\s/g, ''));
+				const bytes = new Uint8Array(bin.length);
+				for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+				return new TextDecoder().decode(bytes);
+			}
+
+			/* Подтягивает АКТУАЛЬНЫЕ данные поста из репо при раскрытии (один раз
+			   за сессию). build-time снэпшот all-posts-tags.json устаревает —
+			   LLM-теггер дописывает теги после деплоя, новые посты появляются.
+			   Для НОВЫХ постов (плейсхолдеров) подтягивает ещё title/pubDate.
+			   Если юзер уже наредактировал (dirty) — теги не трогаем (но title
+			   нового поста подтянуть можно). Тихий best-effort.
+			   На 404 — метим пост stale (переименован/удалён на сервере). */
+			async function refreshLiveTags(p) {
+				if (p._refreshed && p._tagsLoaded) return;
+				const pat = localStorage.getItem(LS_PAT_KEY);
+				if (!pat) return;
+				const wasNew = !p._tagsLoaded;
+				p._refreshed = true;
+				try {
+					const path = 'src/content/blog/' + p.slug + '.md';
+					const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}&_=` + Date.now(), {
+						headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+						cache: 'no-store',
+					});
+					if (r.status === 404) {
+						// файл переименован/удалён — пост stale
+						p._stale = true;
+						p._tagsLoaded = true;
+						if (p._expanded && activeTab === 'posts') {
+							const el = document.querySelector(`#posts-list .post[data-slug="${cssEscape(p.slug)}"]`);
+							if (el) rerenderPost(p, el);
+						}
+						return;
+					}
+					if (!r.ok) return;
+					const data = await r.json();
+					const md = base64ToUtf8(data.content);
+					const live = parseTagsFromMd(md);
+					let changed = false;
+					// Теги: только если юзер не успел наредачить.
+					if (!isDirty(p) && JSON.stringify(live) !== JSON.stringify(p._tags)) {
+						p._tags = live.slice();
+						p._orig = live.slice();
+						changed = true;
+					}
+					// Для нового поста — подтягиваем человеческий title/pubDate.
+					if (wasNew) {
+						const t = parseFmField(md, 'title');
+						const d = parseFmField(md, 'pubDate');
+						if (t && p.title === p.slug) { p.title = t; changed = true; }
+						if (d && !p.pubDate) { p.pubDate = d; changed = true; }
+						if (!isDirty(p)) { p._orig = live.slice(); }
+					}
+					p._tagsLoaded = true;
+					if (changed && p._expanded && activeTab === 'posts') {
+						const el = document.querySelector(`#posts-list .post[data-slug="${cssEscape(p.slug)}"]`);
+						if (el) rerenderPost(p, el);
+					}
+				} catch {}
+			}
+
+			/* Парсит текущие теги из frontmatter живого .md (формат tags: ['a','b']). */
+			function parseTagsFromMd(md) {
+				const fm = md.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+				if (!fm) return [];
+				const line = fm[1].match(/^tags:\s*\[([^\]]*)\]/m);
+				if (!line) return [];
+				const inner = line[1].trim();
+				if (!inner) return [];
+				return inner.split(',').map((s) => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+			}
+
+			/* Достаёт скалярное поле frontmatter (title/pubDate) из живого .md.
+			   Формат стабильный: single-quoted ('') либо без кавычек. */
+			function parseFmField(md, field) {
+				const fm = md.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+				if (!fm) return '';
+				const re = new RegExp('^' + field + ":\\s*'((?:[^']|'')*)'", 'm');
+				const q = fm[1].match(re);
+				if (q) return q[1].replace(/''/g, "'");
+				const bare = fm[1].match(new RegExp('^' + field + ':\\s*(.+?)\\s*$', 'm'));
+				return bare ? bare[1].replace(/^['"]|['"]$/g, '') : '';
+			}
+
+			/* Delta-rebase: применяет ДЕЛЬТУ юзера (added/removed относительно
+			   снэпшота origTags) на ЖИВЫЕ теги из репо. Это предотвращает
+			   обнуление тегов, добавленных LLM-теггером ПОСЛЕ build-time снэпшота
+			   (баг с постом 455: снэпшот был пустой, save затёр живые LLM-теги). */
+			function rebaseTags(liveTags, origTags, newTags) {
+				if (!Array.isArray(origTags)) return newTags.slice(); // нет baseline → blind
+				const added = newTags.filter((t) => !origTags.includes(t));
+				const removed = origTags.filter((t) => !newTags.includes(t));
+				const kept = liveTags.filter((t) => !removed.includes(t));
+				for (const t of added) if (!kept.includes(t)) kept.push(t);
+				return kept;
+			}
+
+			// Структурированная ошибка сохранения: code = 'auth'|'gone'|'conflict'|'fm'|'net'|'http'
+			function saveError(code, msg) {
+				const e = new Error(msg);
+				e.code = code;
+				return e;
+			}
+			// HTTP-статус → код категории
+			function httpToCode(status) {
+				if (status === 401 || status === 403) return 'auth';
+				if (status === 404) return 'gone';
+				if (status === 409) return 'conflict';
+				return 'http';
+			}
+
+			/**
+			 * Сохраняет теги одного поста через GitHub Contents API.
+			 * Delta-rebase поверх живых тегов. Свежий sha берётся GET'ом
+			 * непосредственно перед каждым PUT. На 409 (sha разъехался между
+			 * GET и PUT) — авто-ретрай ОДИН раз со свежим sha. Дальше — ошибка.
+			 * Бросает saveError со .code для человекочитаемых сообщений.
+			 * Возвращает { unchanged, finalTags } — финальные теги в репо.
+			 */
+			async function saveTagsForPost(slug, newTags, pat, origTags) {
+				const path = 'src/content/blog/' + slug + '.md';
+				const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`;
+				const putUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+
+				async function attempt() {
+					// Свежий sha — cache-bust GET (CDN может отдать stale sha → 409).
+					let r1;
+					try {
+						r1 = await fetch(getUrl + '&_=' + Date.now(), {
+							headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+							cache: 'no-store',
+						});
+					} catch (e) {
+						throw saveError('net', 'нет сети');
+					}
+					if (r1.status === 404) throw saveError('gone', 'файл не найден на сервере');
+					if (!r1.ok) throw saveError(httpToCode(r1.status), 'GET ' + r1.status);
+					const data1 = await r1.json();
+					const md = base64ToUtf8(data1.content);
+					const liveTags = parseTagsFromMd(md);
+					const finalTags = rebaseTags(liveTags, origTags, newTags);
+					const newMd = patchFrontmatterTags(md, finalTags);
+					if (newMd == null) throw saveError('fm', 'frontmatter не найден');
+					if (newMd === md) return { unchanged: true, finalTags };
+
+					let r2;
+					try {
+						r2 = await fetch(putUrl, {
+							method: 'PUT',
+							headers: {
+								Authorization: 'token ' + pat,
+								Accept: 'application/vnd.github+json',
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({
+								message: 'admin: update tags для ' + slug,
+								content: utf8ToBase64(newMd),
+								sha: data1.sha,
+								branch: BRANCH,
+							}),
+						});
+					} catch (e) {
+						throw saveError('net', 'нет сети');
+					}
+					if (r2.status === 409) return { conflict: true };
+					if (r2.status === 404) throw saveError('gone', 'файл удалён на сервере');
+					if (!r2.ok) throw saveError(httpToCode(r2.status), 'PUT ' + r2.status);
+					return { unchanged: false, finalTags };
+				}
+
+				let res = await attempt();
+				if (res.conflict) res = await attempt(); // ровно 1 ретрай со свежим sha
+				if (res.conflict) throw saveError('conflict', 'файл изменился на сервере');
+				return res;
+			}
+
+			// Код ошибки → короткое русское сообщение + actionable next step
+			function humanSaveMsg(code) {
+				switch (code) {
+					case 'auth':     return 'PAT истёк или нет доступа';
+					case 'gone':     return 'пост переименован или удалён на сервере — нажми «обновить список»';
+					case 'conflict': return 'файл изменился на сервере, нажми «обновить список» и попробуй снова';
+					case 'fm':       return 'не нашёл frontmatter в файле';
+					case 'net':      return 'нет сети';
+					default:         return 'ошибка сохранения';
+				}
+			}
+
+			async function savePost(p, pat, options) {
+				options = options || {};
+				p._saveStatus = 'saving';
+				p._saveMsg = '';
+				p._saveCode = '';
+				if (!options.silent && activeTab === 'posts') rerenderPostInPlace(p);
+				try {
+					const res = await saveTagsForPost(p.slug, p._tags, pat, p._orig);
+					// Синкаем UI к фактически записанным тегам (delta-rebase мог
+					// сохранить живые LLM-теги, которых не было в снэпшоте).
+					if (res && Array.isArray(res.finalTags)) p._tags = res.finalTags.slice();
+					// _orig = _tags → пост покидает dirty-set, следующая правка
+					// возьмёт свежий sha и не упрётся в 409 на устаревшем.
+					p._orig = p._tags.slice();
+					p._saveStatus = 'ok';
+					p._saveMsg = '';
+					p._saveCode = '';
+					p._stale = false;
+					p._isNew = false;
+					p._tagsLoaded = true;
+				} catch (e) {
+					const code = (e && e.code) ? e.code : 'http';
+					p._saveStatus = 'err';
+					p._saveCode = code;
+					p._saveMsg = humanSaveMsg(code);
+					// файл пропал/переименован → визуально метим stale
+					if (code === 'gone') p._stale = true;
+				}
+				if (!options.silent && activeTab === 'posts') rerenderPostInPlace(p);
+				updateDirtyBadge();
+			}
+
+			// ====================================================
+			// beforeunload — warn о несохранённых
+			// ====================================================
+			window.addEventListener('beforeunload', (e) => {
+				if (dirtyPosts().length > 0) {
+					e.preventDefault();
+					e.returnValue = '';
+				}
+			});
+
+			// ====================================================
+			// bootstrap — ПОСЛЕ всех деклараций (POSTS, функций, addEventListener'ов)
+			// ====================================================
+			if (sessionStorage.getItem(LS_PW_OK_KEY) === '1') afterPasswordOk();
+			else showPwGate();
+		})();</script> </body> </html>
