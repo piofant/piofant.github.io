@@ -1,0 +1,940 @@
+<!DOCTYPE html><html lang="ru" data-astro-cid-ww2fl7eh> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script>
+	/* Theme — anti-flicker: применяет тему ДО первой отрисовки.
+	   Приоритет: явный выбор юзера (localStorage) > системная prefers-color-scheme.
+	   Если юзер ничего не нажимал — следуем за OS-настройкой и реагируем на её
+	   изменения (для тех у кого macOS автоматически переключает по времени суток). */
+	(() => {
+		try {
+			const stored = localStorage.getItem('theme');
+			const mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+
+			function apply(isDark) {
+				if (isDark) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+				} else {
+					document.documentElement.removeAttribute('data-theme');
+				}
+			}
+
+			if (stored === 'dark') apply(true);
+			else if (stored === 'light') apply(false);
+			else if (mq && mq.matches) apply(true);
+
+			/* Слушаем смену OS-темы — но только если юзер сам не выбрал.
+			   Manual override wins; иначе следуем за системой live. */
+			if (mq && mq.addEventListener) {
+				mq.addEventListener('change', (e) => {
+					if (localStorage.getItem('theme')) return;
+					apply(e.matches);
+					window.dispatchEvent(new CustomEvent('themechange'));
+				});
+			}
+		} catch (e) {}
+	})();
+</script><link rel="preconnect" href="https://mc.yandex.ru" crossorigin><link rel="preconnect" href="https://gc.zgo.at" crossorigin><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"><link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png"><link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="sitemap" href="/sitemap-index.xml"><link rel="alternate" type="application/rss+xml" title="Вова Луценко" href="https://piofant.github.io/rss.xml"><meta name="generator" content="Astro v6.1.9"><style>@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/f0d2636ced4e1a21.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ef6e5cba50d6d29c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c254d9c96439e12.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/f0d2636ced4e1a21.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ef6e5cba50d6d29c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c254d9c96439e12.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:italic;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/8008be2b396de33c.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c5d8c6f4c8b7254.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ea9ca6af40cb9c59.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/8008be2b396de33c.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/2c5d8c6f4c8b7254.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:Literata-6d77f9c5cbce91ff;src:url("/_astro/fonts/ea9ca6af40cb9c59.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}@font-face{font-family:"Literata-6d77f9c5cbce91ff fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:109.2923%;ascent-override:107.6928%;descent-override:28.1813%;line-gap-override:0%;}:root{--font-body:Literata-6d77f9c5cbce91ff,"Literata-6d77f9c5cbce91ff fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/f0d2636ced4e1a21.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/ef6e5cba50d6d29c.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/2c254d9c96439e12.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/8008be2b396de33c.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/2c5d8c6f4c8b7254.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/ea9ca6af40cb9c59.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:500;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:600;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/6909caa7688787da.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/1e49bd114953732c.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:Inter-7f01982f8412ec37;src:url("/_astro/fonts/e868cdf4720e9ea5.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}@font-face{font-family:"Inter-7f01982f8412ec37 fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:134.2826%;ascent-override:72.1426%;descent-override:17.9629%;line-gap-override:0%;}:root{--font-ui:Inter-7f01982f8412ec37,"Inter-7f01982f8412ec37 fallback: Arial",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;}</style><style>@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/7a853453d0b804b9.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/4ad86fbd642890a4.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/77d22454585b10d8.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/7a853453d0b804b9.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/4ad86fbd642890a4.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d";src:url("/_astro/fonts/77d22454585b10d8.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}@font-face{font-family:"Wix Madefor Display-1d7d413588e9f66d fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:101.6149%;ascent-override:99.1981%;descent-override:24.7995%;line-gap-override:0%;}:root{--font-heading:"Wix Madefor Display-1d7d413588e9f66d","Wix Madefor Display-1d7d413588e9f66d fallback: Arial",Helvetica,Arial,sans-serif;}</style><link rel="preload" href="/_astro/fonts/7a853453d0b804b9.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/4ad86fbd642890a4.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/77d22454585b10d8.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/e51da4f905618221.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/b247e2262a34a0c3.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/e51da4f905618221.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/b247e2262a34a0c3.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:italic;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/99b727706435bdaf.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/00b5bb498060bc63.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/99b727706435bdaf.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:700;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c";src:url("/_astro/fonts/00b5bb498060bc63.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:italic;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}@font-face{font-family:"Cormorant Garamond-5be03736256fea3c fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:700;font-style:normal;size-adjust:102.6462%;ascent-override:90.018%;descent-override:27.9601%;line-gap-override:0%;}:root{--font-brand:"Cormorant Garamond-5be03736256fea3c","Cormorant Garamond-5be03736256fea3c fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/e51da4f905618221.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/b247e2262a34a0c3.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/99b727706435bdaf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/00b5bb498060bc63.woff2" as="font" type="font/woff2" crossorigin><style>@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/4e70e8c5237c7933.woff2") format("woff2");font-display:swap;unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/84b55459df4504de.woff2") format("woff2");font-display:swap;unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/3b7ade51cdd590c1.woff2") format("woff2");font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-weight:400;font-style:normal;}@font-face{font-family:Forum-596467cc0a762b48;src:url("/_astro/fonts/d815aca08ef017da.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}@font-face{font-family:"Forum-596467cc0a762b48 fallback: Times New Roman";src:local("Times New Roman");font-display:swap;font-weight:400;font-style:normal;size-adjust:64%;ascent-override:133.75%;descent-override:38.75%;line-gap-override:0%;}:root{--font-hero:Forum-596467cc0a762b48,"Forum-596467cc0a762b48 fallback: Times New Roman",Georgia,serif;}</style><link rel="preload" href="/_astro/fonts/4e70e8c5237c7933.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/84b55459df4504de.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/3b7ade51cdd590c1.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/_astro/fonts/d815aca08ef017da.woff2" as="font" type="font/woff2" crossorigin><link rel="canonical" href="https://piofant.github.io/danceroom/"><title>Танцпол | Вова Луценко</title><meta name="title" content="Танцпол | Вова Луценко"><meta name="description" content="Танцпол — Вова Луценко"><meta property="og:type" content="website"><meta property="og:url" content="https://piofant.github.io/danceroom/"><meta property="og:title" content="Танцпол"><meta property="og:description" content="Танцпол — Вова Луценко"><meta property="og:site_name" content="Вова Луценко"><meta property="og:image" content="https://piofant.github.io/avatar_pio.png"><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://piofant.github.io/danceroom/"><meta property="twitter:title" content="Танцпол"><meta property="twitter:description" content="Танцпол — Вова Луценко"><meta property="twitter:image" content="https://piofant.github.io/avatar_pio.png"><meta name="copyright" content="© Вова Луценко — All Rights Reserved"><meta name="rights" content="All Rights Reserved"><meta name="robots" content="index, follow, noai, noimageai"><meta name="googlebot" content="index, follow"><meta name="ChatGPT-User" content="noindex"><meta name="GPTBot" content="noindex"><meta name="ClaudeBot" content="noindex"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Вова Луценко","url":"https://piofant.github.io/","description":"разработчик в прошлом, ai-продакт и танцор в настоящем, maybe актёр в будущем","sameAs":["https://t.me/piofant","https://t.me/pioblog"]}</script><script data-goatcounter="https://piofant.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><script>
+		(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+		m[i].l=1*new Date();
+		for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+		k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+		(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=109129309', 'ym');
+		ym(109129309, 'init', { webvisor: true, clickmap: true, accurateTrackBounce: true, trackLinks: true });
+	</script><style>:root{color-scheme:light;--bg: #ffffff;--bg-navbar: #ffffff;--bg-elevated: #ffffff;--text: #333333;--text-dark: #111111;--muted: #666666;--muted-2: #999999;--border: #e8e8e8;--border-soft: #f4f4f4;--link: #FF4200;--link-hover: #FF8c00;--shadow-sm: rgba(0, 0, 0, .06);--shadow-md: rgba(0, 0, 0, .12);--code-bg: #f2f2f2;--invert: 0;--graph-text: #222;--graph-text-bg: rgba(255, 255, 255, .85);--graph-link: rgba(120, 120, 120, .45);--graph-link-strong: rgba(255, 102, 51, .8);--col-narrow: 620px;--col-feed: 680px}:root[data-theme=dark]{color-scheme:dark;--bg: #0d0d0e;--bg-navbar: #16161a;--bg-elevated: #1d1d22;--text: #b8b8b8;--text-dark: #e0e0e0;--muted: #7a7a7a;--muted-2: #555555;--border: #2a2a2e;--border-soft: #1a1a1e;--link: #ff6633;--link-hover: #ff9b66;--shadow-sm: rgba(0, 0, 0, .4);--shadow-md: rgba(0, 0, 0, .6);--code-bg: #1f1f23;--invert: 1;--graph-text: #d4d4d4;--graph-text-bg: rgba(28, 28, 32, .85);--graph-link: rgba(180, 180, 180, .35);--graph-link-strong: rgba(255, 155, 102, .85)}*{box-sizing:border-box}html,body{margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:var(--font-body),Georgia,serif;font-size:1rem;line-height:1.6;word-wrap:break-word;overflow-wrap:break-word}.projects-page,.projects-page p,.projects-page li,.projects-page span,.projects-page a,.projects-page button{font-family:var(--font-ui),system-ui,-apple-system,BlinkMacSystemFont,sans-serif}a{color:var(--link);text-decoration:none}a:hover{color:var(--link-hover)}h1,h2,h3,h4,h5,h6{font-family:var(--font-heading),"Wix Madefor Display","Open Sans",sans-serif;color:var(--text-dark);line-height:1.2;font-weight:700;margin:0 0 .5em}h1{font-size:2rem}h2{font-size:1.625rem;margin-top:2rem}h3{font-size:1.375rem;margin-top:1.75rem}img{max-width:100%;height:auto}blockquote{margin:1.25rem 0;padding:0 1rem;border-left:3px solid var(--border);color:var(--muted);font-style:italic}blockquote p{margin:.5rem 0}code{background:var(--code-bg);padding:1px 4px;border-radius:3px;font-size:.9em}pre{background:var(--border-soft);border:1px solid var(--border);border-radius:2px;padding:14px 16px;overflow-x:auto;font-size:.9rem;line-height:1.5}pre code{background:none;padding:0}hr{border:0;border-top:1px solid var(--border);margin:2rem 0}main.content{max-width:var(--col-narrow);margin:0 auto;padding:2rem 1rem 4rem}main.feed{max-width:var(--col-feed);margin:0 auto;padding:2rem 1rem 4rem}.home-hero{text-align:center;padding:2.5rem 1rem 1.5rem;max-width:var(--col-feed);margin:0 auto;position:relative}.home-avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:1rem}.home-title{font-family:var(--font-hero),"Forum",Georgia,serif;font-size:2.5rem;letter-spacing:-.005em;margin:0 0 .5rem;color:var(--text-dark);font-weight:700}.home-subtitle{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto}.home-hero+.feed{padding-top:1rem}@media(max-width:640px){.home-hero{padding:1.5rem 1rem .75rem}.home-title{font-size:2rem}.home-avatar{width:76px;height:76px}.home-subtitle{font-size:.9375rem}:root{--col-narrow: 560px}main.content{padding:1.25rem 1.25rem 5rem}main.feed{padding-bottom:5rem}.post-content{font-size:.9375rem;line-height:1.55}.post-content p{margin:0 0 14px}.post-header h1{font-size:1.625rem}.post-content h2{font-size:1.375rem}.post-content h3{font-size:1.1875rem}}.bottom-nav{display:none}@media(max-width:640px){.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--bg-navbar) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:6px 4px max(14px,env(safe-area-inset-bottom));font-family:var(--font-ui),system-ui,sans-serif}.bottom-nav .btab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;color:var(--muted);text-decoration:none;font-size:.66rem;font-weight:600;transition:color .15s;background:none;border:0;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bottom-nav .btab .lbl{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}.bottom-nav .btab .ico{font-size:1.18rem;line-height:1;filter:grayscale(.4);transition:filter .15s,transform .15s}.bottom-nav .btab:hover,.bottom-nav .btab.active{color:var(--text-dark)}.bottom-nav .btab.active .ico{filter:grayscale(0);transform:scale(1.1)}:root[data-theme=dark] .bottom-nav{background:color-mix(in srgb,var(--bg-navbar) 88%,transparent)}.bsheet-overlay{position:fixed;inset:0;z-index:60;background:#00000073;backdrop-filter:blur(2px);opacity:0;transition:opacity .24s ease;pointer-events:none}.bsheet-overlay[open-now]{opacity:1;pointer-events:auto}.bsheet-overlay[hidden]{display:none!important}.bsheet{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--bg-elevated);border-top:1px solid var(--border);border-radius:16px 16px 0 0;padding:8px 18px max(20px,env(safe-area-inset-bottom));font-family:var(--font-ui),system-ui,sans-serif;transform:translateY(100%);transition:transform .28s ease;box-shadow:0 -10px 32px #0000002e}.bsheet[open-now]{transform:translateY(0)}.bsheet[hidden]{display:none!important}.bsheet-handle{width:38px;height:4px;border-radius:999px;background:var(--border);margin:4px auto 12px;cursor:pointer}.bsheet h3{margin:0 0 8px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:var(--font-ui),system-ui,sans-serif}.bsheet a{display:block;padding:13px 4px;color:var(--text-dark);text-decoration:none;font-size:1rem;border-bottom:1px solid var(--border-soft);transition:color .15s}.bsheet a:last-child{border-bottom:0}.bsheet a:active{color:var(--link)}}.hidden-link{color:inherit;text-decoration:none;border-bottom:1px dashed transparent;transition:color .15s ease,border-color .15s ease}.hidden-link:hover{color:var(--link);border-bottom-color:var(--link)}.random-post{position:relative;display:flex;flex-direction:column;max-width:560px;margin:.5rem auto .25rem;padding:.7rem 2.75rem .7rem .85rem;border:1px dashed var(--border);border-radius:8px;background:var(--bg-elevated);overflow:hidden;text-decoration:none;color:var(--text);font-family:var(--font-ui),system-ui,sans-serif;transition:border-color .15s ease,background .15s ease}.random-post .head{display:flex;gap:.85rem;align-items:flex-start}.random-post:before{content:"";position:absolute;left:0;bottom:0;right:0;height:0%;background:color-mix(in srgb,#4a9eff 12%,transparent);animation:random-post-fill var(--rotate-ms, 8s) linear 1 forwards;opacity:0;transition:opacity .4s ease;pointer-events:none;z-index:0}.random-post.idle:before{opacity:1}@keyframes random-post-fill{0%{height:0%}to{height:100%}}.random-post:hover:before,.random-post.paused:before{animation-play-state:paused}.random-post.fill-reset:before{animation:none}.random-post .head,.random-post .quote,.random-post .thumb,.random-post .body{z-index:1;position:relative}.random-post .reroll{z-index:2}.random-post:hover{border-style:solid;border-color:#4a9eff}.random-post .thumb{flex:0 0 56px;width:56px;height:56px;border-radius:6px;background:var(--border-soft);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--muted)}.random-post .thumb.has-image{background-color:var(--border-soft)}.random-post .body{flex:1;min-width:0}.random-post .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted-2);margin-bottom:2px;font-weight:600}.random-post .reroll{position:absolute;top:8px;right:8px;background:var(--border-soft);border:1px solid var(--border);cursor:pointer;font-size:1.125rem;color:var(--muted);width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1;padding:0;transition:color .15s,background .15s,border-color .15s,transform .3s}.random-post .reroll:hover{color:#fff;background:#4a9eff;border-color:#4a9eff;transform:rotate(180deg)}.random-post .ttl{color:var(--text-dark);font-weight:600;font-size:1rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.random-post .meta{color:var(--muted);font-size:.8125rem;margin-top:2px}.random-post .quote{margin:10px 0 0;padding:4px 0 4px 12px;border-left:3px solid color-mix(in srgb,#4a9eff 45%,transparent);font-family:var(--font-quote),Lora,Georgia,serif;font-style:italic;font-size:.8125rem;color:var(--text);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2;overflow:hidden}.random-post .quote[hidden]{display:none}.random-post .thumb,.random-post .ttl,.random-post .meta,.random-post .quote{transition:opacity .22s ease,transform .22s ease}.random-post.rotating .thumb,.random-post.rotating .ttl,.random-post.rotating .meta,.random-post.rotating .quote{opacity:0;transform:translateY(-3px)}@media(max-width:640px){.random-post{max-width:calc(100% - 1.5rem);margin:.4rem .75rem .25rem;padding:.55rem 2.5rem .55rem .7rem}.random-post .head{gap:.6rem}.random-post .thumb{width:48px;height:48px;flex-basis:48px;font-size:1.35rem}.random-post .reroll{width:26px;height:26px;font-size:1rem;top:6px;right:6px}.random-post .ttl{font-size:.9375rem}.random-post .meta{font-size:.75rem}.random-post .quote{margin-top:8px;padding-left:10px;border-left-width:2px;font-size:.75rem;line-height:1.45}}.site-header{position:sticky;top:0;z-index:100;background:var(--bg-navbar);border-bottom:1px solid var(--border);padding:.875rem 1.25rem;font-family:var(--font-brand),"PT Sans",system-ui,sans-serif;transition:padding .4s ease-in-out,box-shadow .4s ease-in-out}.site-header.scrolled{padding:.4rem 1.25rem;box-shadow:0 2px 8px #0000000f}.site-header .inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:1rem}.site-header .brand{display:flex;align-items:center;gap:10px;color:var(--text-dark);text-decoration:none}.site-header .brand span{font-weight:800;font-size:1.34375rem;letter-spacing:-.01em}.site-header .brand img{width:30px;height:30px;border-radius:50%;transition:width .4s ease-in-out,height .4s ease-in-out}.site-header.scrolled .brand img{width:24px;height:24px}.site-header nav{margin-left:auto;display:flex;gap:18px;align-items:center}@media(max-width:760px){.site-header{padding:.6rem .85rem}.site-header .inner{flex-wrap:wrap;gap:.4rem .6rem;align-items:center}.site-header .brand span{font-size:1.05rem}.site-header .brand img{width:26px;height:26px}.site-header nav>a,.site-header nav .nav-dd{display:none}.site-header nav{margin-left:auto;display:flex;gap:4px}.site-header nav .search-btn,.site-header nav .theme-toggle{padding:4px 6px;flex-shrink:0}.search-btn,.theme-toggle{margin-left:0}}.site-header nav>a,.site-header nav .nav-dd-trigger{color:var(--text);font-size:.9375rem;text-transform:uppercase;letter-spacing:.04em;font-weight:600;background:none;border:0;cursor:pointer;font-family:inherit;padding:0;line-height:1}.site-header nav>a:hover,.site-header nav .nav-dd-trigger:hover{color:var(--link-hover)}.site-header nav .nav-dd{position:relative}.site-header nav .nav-dd-trigger:after{content:none}.site-header nav .nav-dd:hover .nav-dd-trigger,.site-header nav .nav-dd.tap-open .nav-dd-trigger{color:var(--link-hover)}.site-header nav .nav-dd-menu{position:absolute;top:100%;left:50%;transform:translate(-50%);margin-top:.4rem;min-width:200px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 24px #00000014;padding:.3rem 0;display:none;z-index:50;font-family:var(--font-ui),system-ui,sans-serif}.site-header nav .nav-dd-menu:before{content:"";position:absolute;top:-.5rem;left:0;right:0;height:.5rem}.site-header nav .nav-dd:hover .nav-dd-menu,.site-header nav .nav-dd.tap-open .nav-dd-menu{display:block}.site-header nav .nav-dd-menu a{display:block;padding:.4rem .9rem;color:var(--text);text-transform:none;letter-spacing:0;font-weight:500;font-size:.875rem;white-space:nowrap;transition:background .12s,color .12s}.site-header nav .nav-dd-menu a .ico{display:inline-block;width:1.25em;margin-right:.4em;text-align:center;opacity:.85}.bsheet a .ico{display:inline-block;width:1.4em;margin-right:.5em;text-align:center;opacity:.85}.site-header nav .nav-dd-menu a.external:after{content:" ↗";color:var(--muted-2);font-size:.85em}.site-header nav .nav-dd-menu a:hover{background:var(--border-soft);color:var(--text-dark)}.site-header nav .nav-dd-menu a.external:hover:after{color:var(--link)}@media(max-width:760px){.site-header nav .nav-dd-menu{left:0;right:auto;transform:none;min-width:180px;max-width:calc(100vw - 24px)}.site-header nav .nav-dd:nth-of-type(2) .nav-dd-menu{left:auto;right:0}}.site-footer{background:var(--bg-navbar);border-top:1px solid var(--border);padding:1.5rem 1rem;text-align:center;color:var(--muted);font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem;margin-top:1.25rem}.site-footer a{color:var(--text);margin:0 .5rem}.posts-list{list-style:none;padding:0;margin:0}.post-card{display:grid;grid-template-columns:minmax(0,1fr) 7rem;column-gap:1rem;row-gap:4px;align-items:start;padding:1.75rem 0;border-bottom:1px solid color-mix(in srgb,var(--text-dark) 18%,transparent)}.post-card:last-child{border-bottom:0}.post-card>*{grid-column:1;min-width:0}.post-card .card-date{grid-row:1}.post-card .card-link{grid-row:2}.post-card .card-excerpt{grid-row:3}.post-card .card-image{grid-column:2;grid-row:1 / span 3;width:7rem;height:7rem;align-self:start;border-radius:2px;overflow:hidden;background:var(--border-soft);display:block}.post-card .card-image img{width:100%;height:100%;object-fit:cover;display:block}.post-card .card-date{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted-2);font-size:.8125rem;margin:0}.post-card .card-link{color:var(--text-dark);font-family:var(--font-body),Georgia,serif;font-weight:700;font-size:1.25rem;line-height:1.25;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.post-card .card-link:hover{color:var(--link-hover)}.post-card .card-sub{font-family:var(--font-body),Georgia,serif;color:var(--muted);font-weight:400;font-size:.9375rem;margin:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}.post-card .card-excerpt{font-family:var(--font-body),Georgia,serif;font-size:.9375rem;color:var(--text);line-height:1.55;margin:6px 0 0;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}@media(max-width:640px){.post-card{grid-template-columns:1fr}.post-card .card-image{grid-column:1;grid-row:1;width:100%;height:10rem;margin-bottom:.5rem}.post-card .card-date{grid-row:2}.post-card .card-link{grid-row:3}.post-card .card-excerpt{grid-row:4}}.all-posts-link{margin-top:1.5rem;font-family:var(--font-ui),system-ui,sans-serif;font-size:.9375rem}.post-header{margin-bottom:1.5rem}.post-header h1{font-size:2rem;margin:0 0 .4rem;line-height:1.15}.post-header .post-date{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted-2);font-size:.8125rem;margin:0 0 .6rem}.post-header .post-subtitle{font-family:var(--font-ui),system-ui,sans-serif;color:var(--muted);font-size:1rem;font-weight:400;margin:0 0 1rem}.post-header .post-hero{margin:1.5rem 0;border-radius:3px;overflow:hidden}.post-header .post-hero img{display:block;width:100%}.post-tags{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 1.5rem;font-family:var(--font-ui),system-ui,sans-serif}.post-tags a{font-size:12px;padding:2px 10px;border:1px solid var(--text-dark);color:var(--text-dark);border-radius:999px;text-decoration:none}.post-tags a:hover{background:var(--text-dark);color:var(--bg)}.post-content p{margin:0 0 15px}.post-content ul,.post-content ol{margin:.4em 0 1em;padding-left:1.5em}.post-content li{margin:.15em 0}.post-content video{display:block;width:100%;max-width:100%;height:auto;margin:1rem auto;border-radius:8px;background:#000}.post-content video.tg-video-note{max-width:320px;border-radius:50%;aspect-ratio:1;object-fit:cover}.series-nav{margin:0 0 1.75rem;padding:.85rem 1rem;border:1px solid var(--border);border-radius:6px;font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem;display:flex;flex-wrap:wrap;align-items:center;gap:.75rem}.series-nav .name{font-weight:600;color:var(--text-dark)}.series-nav .pills{display:flex;gap:.4rem;flex-wrap:wrap}.series-nav .pill{display:inline-flex;align-items:center;justify-content:center;min-width:1.6rem;padding:.15rem .55rem;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:.8125rem;background:var(--bg);text-decoration:none}.series-nav a.pill:hover{border-color:var(--text-dark);color:var(--text-dark)}.series-nav .pill.current{background:var(--text-dark);color:var(--bg);border-color:var(--text-dark);font-weight:600}.series-cta{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin:2.5rem 0 0;padding:1rem 1.2rem;background:var(--bg-elevated);color:var(--text);border:1px solid var(--border);border-radius:4px;font-family:var(--font-ui),system-ui,sans-serif;text-decoration:none;transition:background .15s ease,color .15s ease,border-color .15s ease}.series-cta:hover{background:var(--link);color:#fff;border-color:var(--link)}.series-cta:hover .lbl,.series-cta:hover .arrow{color:#fff}.series-cta .arrow{color:var(--link)}.series-cta .lbl{font-size:.8125rem;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:.2rem}.series-cta .ttl{font-size:1rem;font-weight:600;line-height:1.3}.series-cta .arrow{font-size:1.5rem;flex-shrink:0;line-height:1}.mini-graph-wrap{margin-top:2rem;font-family:var(--font-ui),system-ui,sans-serif}.mini-graph-wrap .post-actions-row{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem}.mini-graph-wrap .tg-pill{font-size:.9375rem;font-weight:500;color:var(--text);text-decoration:none;cursor:pointer;padding:.55rem .9rem;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease}.mini-graph-wrap .tg-pill:hover{background:var(--bg);border-color:#229ed9;color:#229ed9;transform:translateY(-1px)}:root[data-theme=dark] .mini-graph-wrap .tg-pill:hover{border-color:#4ab9ea;color:#4ab9ea}.mini-graph-wrap .tg-pill svg{flex-shrink:0;color:var(--muted);transition:color .15s ease}.mini-graph-wrap .tg-pill:hover svg{color:inherit}.mini-graph-wrap h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 .75rem}.mini-graph-wrap details{display:inline-block}.mini-graph-wrap details>summary{font-size:.9375rem;color:var(--text);font-weight:500;cursor:pointer;padding:.55rem .9rem;user-select:none;list-style:none;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,transform .15s ease}.mini-graph-wrap details>summary::-webkit-details-marker{display:none}.mini-graph-wrap details>summary:before{content:"▸";font-size:.75rem;color:var(--muted);transition:transform .15s ease;display:inline-block}.mini-graph-wrap details[open]>summary:before{transform:rotate(90deg)}.mini-graph-wrap details>summary:hover{background:var(--bg);border-color:var(--text);transform:translateY(-1px)}.mini-graph-wrap details>summary .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8125rem;background:var(--bg);border:1px solid var(--border);padding:.05rem .45rem;border-radius:999px;margin-left:.15rem}.mini-graph-wrap details[open]>summary{background:transparent;border-color:transparent;padding-left:0}.mini-graph-wrap>.mini-graph{display:none;width:100%;margin-top:.5rem}.mini-graph-wrap:has(.conn-toggle[open])>.mini-graph{display:block}.mini-graph{width:100%;height:280px;background:var(--border-soft);border:1px solid var(--border);border-radius:4px}.related-posts{margin-top:2.5rem;font-family:var(--font-ui),system-ui,sans-serif}.related-posts h3{font-size:.8125rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 .75rem}.related-posts ul{list-style:none;padding:0;margin:0}.related-posts li{display:flex;gap:12px;align-items:baseline;padding:6px 0}.related-posts li a{font-size:.9375rem;line-height:1.35;color:var(--link)}.related-posts li .d{color:var(--muted-2);font-size:.75rem;min-width:90px;flex-shrink:0;order:-1}.post-nav{margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-family:var(--font-ui),system-ui,sans-serif}.post-nav-slot{min-width:0}.post-nav-slot a{display:block;padding:.75rem;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text);transition:background .15s,border-color .15s}.post-nav-slot a:hover{background:var(--border-soft);border-color:var(--muted);color:var(--text-dark)}.post-nav-slot.next{text-align:right}.post-nav-slot .dir{display:block;font-size:.75rem;color:var(--muted-2);margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em}.post-nav-slot .t{display:block;font-size:.875rem;line-height:1.35;color:var(--text-dark)}@media(max-width:560px){.post-nav{grid-template-columns:1fr}}.pagination{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-family:var(--font-ui),system-ui,sans-serif;font-size:.875rem}.pagination a{padding:6px 12px;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--link)}.pagination a:hover{background:var(--border-soft);color:var(--link-hover)}.pagination .current{color:var(--muted)}.pagination .disabled{color:var(--border);border-color:transparent;cursor:default}.tag-cloud{display:flex;flex-wrap:wrap;gap:10px 14px;margin:1.5rem 0 2rem;line-height:1.4;align-items:baseline}.tag-cloud a{text-decoration:none;color:var(--text-dark);font-family:var(--font-ui),system-ui,sans-serif;font-weight:700;transition:color .15s;white-space:nowrap}.tag-cloud a:hover{color:var(--link)}.tag-cloud a .c{font-weight:400;color:var(--muted-2);font-size:.75em;margin-left:2px}.post-content a{color:var(--link)}.post-content a:hover{color:var(--link-hover)}.wiki-page{font-family:var(--font-ui),"Inter",system-ui,sans-serif;color:var(--text-dark);line-height:1.5}.wiki-page h1{font-family:inherit;font-size:2.25rem;font-weight:800;letter-spacing:-.01em;color:var(--text-dark);line-height:1.2;margin:0 0 1.25rem}.wiki-page .page-content h2,.wiki-page .page-content h3,.wiki-page .page-content h4{font-family:inherit;color:var(--text-dark);font-weight:700;letter-spacing:-.01em;line-height:1.3;margin:1.75rem 0 .4rem}.wiki-page .page-content h2{font-size:1.5rem}.wiki-page .page-content h3{font-size:1.25rem}.wiki-page .page-content h4{font-size:1.0625rem}.wiki-page .page-content h2 strong,.wiki-page .page-content h3 strong{font-weight:700}.wiki-page .page-content p{margin:4px 0 6px}.wiki-page .page-content strong{font-weight:700;color:var(--text-dark)}.wiki-page .page-content a{color:var(--text-dark);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);text-underline-offset:3px;text-decoration-thickness:1px;border:0;transition:text-decoration-color .12s}.wiki-page .page-content a:hover{text-decoration-color:currentColor;color:var(--text-dark)}.wiki-page .page-content blockquote{border-left:3px solid var(--text-dark);padding:0 0 0 14px;margin:.75rem 0;color:var(--text-dark);font-style:normal}.wiki-page .page-content blockquote p{margin:.25rem 0}.wiki-page .page-content hr{border:0;border-top:1px solid var(--border);margin:1.75rem 0}.callout,.wiki-page .callout,.page-content .callout{display:block;padding:14px 16px;margin:14px 0;background:var(--border-soft);color:var(--text-dark);border:0;border-radius:4px;font-size:1rem;line-height:1.5}.callout>*:first-child{margin-top:0}.callout>*:last-child{margin-bottom:0}.callout>p{margin:.4rem 0}.callout>p:first-child{margin-top:0}.callout>p:last-child{margin-bottom:0}.callout.green_background{background:#ddedea;color:#1c3a32}.callout.red_background{background:#fbe4e4;color:#5d1f1f}.callout.yellow_background{background:#fbf3db;color:#4a3c0c}.callout.blue_background{background:#ddebf1;color:#1f3d4f}.callout.orange_background{background:#faebdd;color:#5a3215}.callout.purple_background{background:#eadff5;color:#3d2050}.callout.pink_background{background:#f4dfeb;color:#4d1d3a}.callout.brown_background{background:#eee0da;color:#3d2a1f}.callout.gray_background,.callout.gray_bg{background:#f1f1ef;color:#37352f}:root[data-theme=dark] .callout{background:#2a2a2e;color:var(--text-dark)}:root[data-theme=dark] .callout.green_background{background:#243933;color:#d3eee5}:root[data-theme=dark] .callout.red_background{background:#3a2424;color:#f3d4d4}:root[data-theme=dark] .callout.yellow_background{background:#3b3422;color:#f0e1b3}:root[data-theme=dark] .callout.blue_background{background:#1f3340;color:#cfe2eb}:root[data-theme=dark] .callout.orange_background{background:#3d2a1c;color:#f1d6b4}:root[data-theme=dark] .callout.purple_background{background:#2e2238;color:#ddc8eb}:root[data-theme=dark] .callout.pink_background{background:#392331;color:#ebcde0}:root[data-theme=dark] .callout.brown_background{background:#322821;color:#ddc7b6}:root[data-theme=dark] .callout.gray_background,:root[data-theme=dark] .callout.gray_bg{background:#2a2a2e;color:#e0e0dc}:root[data-theme=dark] .callout a{color:inherit}.wiki-page .page-content details{margin:.4rem 0;border:0;background:transparent;padding:0;border-radius:6px;transition:background .15s,padding .15s}.wiki-page .page-content details[open]{background:var(--border-soft);padding:.55rem .85rem .7rem .45rem;margin:.5rem -.45rem}.wiki-page .page-content summary{cursor:pointer;list-style:none;display:flex;align-items:flex-start;gap:.45rem;padding:.15rem 0;font-weight:500;color:var(--text-dark);font-family:inherit}.wiki-page .page-content summary::-webkit-details-marker{display:none}.wiki-page .page-content summary:before{content:"▶";font-size:.7em;color:var(--muted);transition:transform .15s;margin-top:6px;flex-shrink:0}.wiki-page .page-content details[open]>summary:before{transform:rotate(90deg)}.wiki-page .page-content details[open]>summary{padding:.15rem 0 .35rem .5rem;margin-bottom:.2rem}.wiki-page .page-content details>*:not(summary){margin-left:1.5rem;padding-left:0}.wiki-page .page-content details[open]>*:not(summary){margin-left:1.95rem}.post-content details{margin:.75rem 0;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:var(--border-soft)}.post-content details[open]{background:var(--bg-elevated)}.post-content summary{cursor:pointer;font-weight:600;color:var(--text-dark);padding:2px 0;list-style:disclosure-closed;font-family:var(--font-ui),system-ui,sans-serif}.post-content details[open]>summary{list-style:disclosure-open;margin-bottom:6px}.post-content details>:not(summary){padding-left:14px;margin-top:4px}.page-content a[href*="/wiki/cases/"],.page-content details a[href*="/wiki/cases/"]{display:block;padding:10px 14px;margin:6px 0;border:1px solid var(--border);border-radius:4px;text-decoration:none;color:var(--text-dark);background:var(--bg-elevated);transition:background .15s}.page-content a[href*="/wiki/cases/"]:before,.page-content details a[href*="/wiki/cases/"]:before{content:"📄 ";margin-right:6px;opacity:.6}.page-content a[href*="/wiki/cases/"]:hover{background:var(--border-soft)}.page-content img{border-radius:4px;margin:1.25rem 0}.page-content h2{font-size:1.375rem}.page-content h3{font-size:1.125rem}.page-content hr{border:0;border-top:1px solid var(--border);margin:2rem 0}.page-content ul,.page-content ol{padding-left:1.5rem}.page-content li{margin:.35rem 0}.page-content blockquote{border-left:3px solid var(--border);margin:1.25rem 0;padding:.25rem 1rem;color:var(--muted);font-style:italic}.archive-page h2{font-family:var(--font-ui),system-ui,sans-serif;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:2rem 0 .5rem;font-weight:700}.archive-page h2:first-child{margin-top:0}.archive-list{list-style:none;padding:0;margin:0}.archive-list li{padding:4px 0;display:flex;gap:12px;align-items:baseline;font-family:var(--font-ui),system-ui,sans-serif}.archive-list .date{color:var(--muted-2);font-size:.8125rem;min-width:110px;flex-shrink:0}.archive-list a{font-size:.9375rem;line-height:1.3}.related-posts .related-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media(max-width:720px){.related-posts .related-grid{grid-template-columns:1fr}}.related-posts .related-card{display:flex;gap:12px;align-items:flex-start;padding:10px;border:1px solid var(--border);border-radius:6px;background:var(--bg-elevated);text-decoration:none;color:var(--text);transition:box-shadow .15s ease,border-color .15s ease;min-width:0}.related-posts .related-card:hover{box-shadow:0 4px 14px var(--shadow-sm);border-color:var(--text);color:var(--text)}.related-posts .related-card .thumb{flex:0 0 70px;width:70px;height:70px;border-radius:6px;background-color:var(--border-soft);background-size:cover;background-position:center;background-repeat:no-repeat;display:block}.related-posts .related-card .thumb-fallback{display:flex;align-items:center;justify-content:center;font-family:var(--font-heading),"Wix Madefor Display",sans-serif;font-size:1.75rem;font-weight:700;color:var(--muted);background:linear-gradient(135deg,var(--border-soft) 0%,var(--border) 100%)}.related-posts .related-card .body{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 auto}.related-posts .related-card .ttl{font-family:var(--font-heading),"Wix Madefor Display","Open Sans",sans-serif;font-size:.95rem;line-height:1.3;font-weight:700;color:var(--text-dark);transition:color .15s ease;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.related-posts .related-card:hover .ttl{color:var(--link)}.related-posts .related-card .sub{font-family:var(--font-ui),system-ui,sans-serif;font-size:.8125rem;line-height:1.35;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.related-posts .related-card .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:2px;font-family:var(--font-ui),system-ui,sans-serif;font-size:.72rem;color:var(--muted-2)}.related-posts .related-card .meta .d{color:var(--muted-2)}.related-posts .related-card .tag-pills{display:inline-flex;flex-wrap:wrap;gap:4px}.related-posts .related-card .pill{display:inline-block;padding:1px 7px;border-radius:999px;background:var(--border-soft);color:var(--muted);font-size:.7rem;line-height:1.5;border:1px solid var(--border)}.wiki-related-toggle{display:inline-block}.wiki-related-toggle>summary{font-size:.9375rem;color:var(--text);font-weight:500;cursor:pointer;padding:.55rem .9rem;user-select:none;list-style:none;display:inline-flex;align-items:center;gap:.5rem;background:var(--border-soft);border:1px solid var(--border);border-radius:999px;transition:background .15s ease,border-color .15s ease,transform .15s ease;font-family:var(--font-ui),system-ui,sans-serif}.wiki-related-toggle>summary::-webkit-details-marker{display:none}.wiki-related-toggle>summary:before{content:"▸";font-size:.75rem;color:var(--muted);transition:transform .15s ease;display:inline-block}.wiki-related-toggle[open]>summary:before{transform:rotate(90deg)}.wiki-related-toggle>summary:hover{background:var(--bg);border-color:var(--text);transform:translateY(-1px)}.wiki-related-toggle>summary .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.8125rem;background:var(--bg);border:1px solid var(--border);padding:.05rem .45rem;border-radius:999px;margin-left:.15rem}.wiki-related-toggle[open]>summary{background:transparent;border-color:transparent;padding-left:0}.wiki-related-toggle>.related-grid{margin-top:.75rem}.wiki-related h3{display:none}.post-metrics{display:flex;flex-wrap:wrap;gap:.3rem .7rem;align-items:baseline;margin:1.25rem 0 0;font-family:var(--font-ui),system-ui,sans-serif;font-size:.75rem;font-weight:400;color:var(--muted-2);letter-spacing:.01em}.post-metrics .m{display:inline-flex;align-items:baseline;gap:.25em;white-space:nowrap;color:inherit;text-decoration:none;font-weight:inherit;transition:color .15s}.post-metrics .m:hover{color:var(--text);text-decoration:underline;text-decoration-color:var(--muted-2);text-underline-offset:3px}.post-metrics .sep{color:var(--muted-2);user-select:none;pointer-events:none}.post-content>hr:last-child{display:none}
+[data-astro-cid-ww2fl7eh]{box-sizing:border-box}html,body{margin:0;padding:0;height:100%;background:#0a0c10;color:#e8efe9;font-family:ui-monospace,SF Mono,Monaco,monospace;overflow:hidden}canvas[data-astro-cid-ww2fl7eh]{display:block}.dr-bar[data-astro-cid-ww2fl7eh]{position:fixed;left:16px;z-index:10;display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;max-width:calc(100vw - 32px);padding-bottom:4px;scrollbar-width:thin;scrollbar-color:#24513f transparent}.dr-bar[data-astro-cid-ww2fl7eh]::-webkit-scrollbar{height:4px}.dr-bar[data-astro-cid-ww2fl7eh]::-webkit-scrollbar-thumb{background:#24513f;border-radius:2px}.dr-bar[data-astro-cid-ww2fl7eh]>[data-astro-cid-ww2fl7eh]{flex:0 0 auto}.dr-b1[data-astro-cid-ww2fl7eh]{top:14px}.dr-b2[data-astro-cid-ww2fl7eh]{top:54px}.dr-b3[data-astro-cid-ww2fl7eh]{top:94px}button{font-family:inherit;font-size:12px;line-height:1;padding:8px 12px;border-radius:999px;cursor:pointer;border:1px solid #24513f;background:#0c1612bf;color:#cfe9dd;transition:background .15s,border-color .15s}button:hover{border-color:#2bb37d}button.dr-pri{border-color:#2bb37d;background:linear-gradient(180deg,#1ea372,#16805a);color:#e8fff4;font-weight:700}button.dr-on{border-color:#2bb37d;background:#2bb37d38;color:#eafff5}.dr-lbl[data-astro-cid-ww2fl7eh]{font-size:11px;color:#6d857a;margin-right:2px}.dr-info[data-astro-cid-ww2fl7eh]{position:fixed;bottom:62px;left:16px;font-size:11px;color:#6d857a;line-height:1.8;max-width:min(640px,calc(100vw - 130px));pointer-events:none}.dr-info[data-astro-cid-ww2fl7eh] b[data-astro-cid-ww2fl7eh]{color:#9fd9c0;font-weight:400}.dr-line[data-astro-cid-ww2fl7eh]{position:fixed;left:0;right:0;bottom:0;height:54px;z-index:12;background:linear-gradient(180deg,#0a0c1000,#0a0c10eb 40%);border-top:1px solid #1c2b24}.dr-seg{position:absolute;top:10px;bottom:8px;border-left:1px solid #24513f;padding:3px 0 0 5px;font-size:10px;color:#6d857a;overflow:hidden;white-space:nowrap;transition:color .2s,background .2s}.dr-seg.now{color:#eafff5;background:#2bb37d29}.dr-seg.next{color:#9fd9c0}.dr-seg.soon{color:#eafff5;background:#2bb37d1a}.dr-seg i{display:block;font-style:normal;font-size:9px;color:#4d6459}.dr-play[data-astro-cid-ww2fl7eh]{position:absolute;top:6px;bottom:4px;width:2px;background:#00ff90;box-shadow:0 0 8px #00ff90;pointer-events:none}.dr-play[data-astro-cid-ww2fl7eh]:before{content:"";position:absolute;left:-5px;top:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #00ff90;filter:drop-shadow(0 0 4px #00ff90)}.dr-count[data-astro-cid-ww2fl7eh]{position:fixed;bottom:58px;z-index:13;transform:translate(-50%);font-size:11px;color:#7f9c8e;white-space:nowrap;pointer-events:none;transition:color .15s,opacity .2s;opacity:0}.dr-count[data-astro-cid-ww2fl7eh].on{opacity:1}.dr-count[data-astro-cid-ww2fl7eh] b[data-astro-cid-ww2fl7eh]{color:#cfe9dd;font-weight:400}.dr-count[data-astro-cid-ww2fl7eh].near{color:#00ff90;font-size:13px}.dr-count[data-astro-cid-ww2fl7eh].near b[data-astro-cid-ww2fl7eh]{color:#eafff5;font-weight:700}.dr-back[data-astro-cid-ww2fl7eh]{position:fixed;bottom:62px;right:16px;z-index:10;font-size:11px;color:#00ff90bf;text-decoration:none}.dr-back[data-astro-cid-ww2fl7eh]:hover{color:#00ff90}.dr-panel[data-astro-cid-ww2fl7eh]{position:fixed;inset:0;z-index:40;display:none;overflow:auto;background:#06080b;padding:24px 16px 80px}.dr-panel[data-astro-cid-ww2fl7eh].on{display:block}.dr-panel-in[data-astro-cid-ww2fl7eh]{max-width:860px;margin:0 auto;font-size:12px;line-height:1.7}.dr-panel h2{font-size:15px;color:#eafff5;margin:0 0 4px;font-weight:700}.dr-panel h3{font-size:12px;color:#9fd9c0;margin:26px 0 8px;font-weight:400;text-transform:lowercase}.dr-panel p{color:#6d857a;margin:0 0 4px}.dr-panel code{color:#cfe9dd;background:#2bb37d1f;padding:2px 6px;border-radius:4px}.dr-kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.dr-kv div{border:1px solid #1c2b24;border-radius:8px;padding:10px 12px}.dr-kv b{display:block;font-size:17px;color:#eafff5;font-weight:700}.dr-kv span{color:#6d857a;font-size:11px}.dr-bars{display:flex;gap:1px;height:26px}.dr-bars i{flex:1 1 0;border-radius:1px;position:relative}.dr-bars i.low{background:#16342a}.dr-bars i.mid{background:#1e7f59}.dr-bars i.high{background:#2bb37d}.dr-bars i.evt:after{content:"";position:absolute;left:50%;top:-5px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:#00ff90}.dr-tbl{width:100%;border-collapse:collapse}.dr-tbl th{text-align:left;font-weight:400;color:#6d857a;font-size:11px;border-bottom:1px solid #1c2b24;padding:6px 8px}.dr-tbl td{padding:5px 8px;border-bottom:1px solid #121c18;color:#cfe9dd}.dr-tbl tr.evt td:first-child{color:#00ff90}.dr-tbl td.num{color:#6d857a;font-variant-numeric:tabular-nums}.dr-close[data-astro-cid-ww2fl7eh]{position:fixed;top:14px;right:16px;z-index:41}.dr-load[data-astro-cid-ww2fl7eh]{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#0a0c10;color:#00ff90;font-size:13px;transition:opacity .5s ease,visibility 0s linear .5s}.dr-load[data-astro-cid-ww2fl7eh].done{opacity:0;visibility:hidden}@media(max-height:480px){.dr-info[data-astro-cid-ww2fl7eh]{display:none}}@media(max-width:640px){.dr-b1[data-astro-cid-ww2fl7eh]{top:10px}.dr-b2[data-astro-cid-ww2fl7eh]{top:44px}.dr-b3[data-astro-cid-ww2fl7eh]{top:78px}.dr-info[data-astro-cid-ww2fl7eh]{font-size:10px}}
+</style></head> <body data-astro-cid-ww2fl7eh> <div class="dr-load" id="dr-load" data-astro-cid-ww2fl7eh>&gt; загружаю персонажей...</div> <div class="dr-bar dr-b1" data-astro-cid-ww2fl7eh> <button class="dr-pri" id="dr-play" data-astro-cid-ww2fl7eh>♫ ▶ play</button> <span class="dr-lbl" data-astro-cid-ww2fl7eh>кто:</span><span id="dr-models" data-astro-cid-ww2fl7eh></span> </div> <div class="dr-bar dr-b2" data-astro-cid-ww2fl7eh> <span class="dr-lbl" data-astro-cid-ww2fl7eh>трек для тебя:</span><span id="dr-taste" data-astro-cid-ww2fl7eh></span> <button id="dr-open" data-astro-cid-ww2fl7eh>⌕ разбор трека</button> </div> <div class="dr-panel" id="dr-panel" data-astro-cid-ww2fl7eh> <button class="dr-close" id="dr-close" data-astro-cid-ww2fl7eh>✕ закрыть</button> <div class="dr-panel-in" id="dr-panel-in" data-astro-cid-ww2fl7eh></div> </div> <div class="dr-bar dr-b3" data-astro-cid-ww2fl7eh> <button id="dr-auto" class="dr-on" data-astro-cid-ww2fl7eh>↻ авто</button> <span class="dr-lbl" data-astro-cid-ww2fl7eh>движение:</span><span id="dr-clips" data-astro-cid-ww2fl7eh></span> <span class="dr-lbl" id="dr-st" data-astro-cid-ww2fl7eh></span> </div> <div class="dr-info" data-astro-cid-ww2fl7eh> <b data-astro-cid-ww2fl7eh>трек для тебя</b> — ручной сигнал вместо профиля вкуса: любимый персонаж проживает вместе с тобой, фоновый едва замечает, нетипичный слушает задумчиво<br data-astro-cid-ww2fl7eh>
+в режиме <b data-astro-cid-ww2fl7eh>авто</b> движение меняется на событиях в музыке — смена секции или скачок энергии, их 14, отмечены ⚡<br data-astro-cid-ww2fl7eh>
+трек разобран заранее: <b data-astro-cid-ww2fl7eh>138 BPM</b>, попадание онсетов в долю 54% против 23% случайных — весь разбор под кнопкой <b data-astro-cid-ww2fl7eh>⌕ разбор трека</b><br data-astro-cid-ww2fl7eh>
+на полосе — метка момента и отсчёт долей до следующего движения<br data-astro-cid-ww2fl7eh>
+мышью покрутить · колесом приблизить
+</div> <div class="dr-line" id="dr-line" data-astro-cid-ww2fl7eh><div class="dr-play" id="dr-playhead" data-astro-cid-ww2fl7eh></div></div> <div class="dr-count" id="dr-count" data-astro-cid-ww2fl7eh></div> <a class="dr-back" href="/" data-astro-cid-ww2fl7eh>← на сайт</a> <audio id="dr-audio" src="/audio/cyberpunk-shuffle.mp3" loop preload="auto" data-astro-cid-ww2fl7eh></audio> <script type="application/json" id="dr-track">{"src":"/audio/cyberpunk-shuffle.mp3","title":"cyberpunk shuffle","bpm":138,"offset":0.1303,"duration":116.2,"beatQuality":0.539,"beatRatio":2.34,"beatSync":true,"bars":"llllllllmhhhhhhmmllllllmmhhhhhhhhhhhhhhmmllllllllllllmlmmhhhhhhmll","events":[8,9,15,17,23,25,39,41,53,54,55,57,63,64]}</script> <script type="module">/**
+ * Грув — слой движения поверх танцевального клипа.
+ *
+ * Клип один и короткий, трек длинный. Если ничего не делать, персонаж крутит
+ * одну петлю с одинаковой энергией от начала до конца, а поверх неё бьёт
+ * одинаковый импульс на каждую долю. Получается метроном, а не танец.
+ *
+ * Настоящий танец устроен иначе, и здесь закодированы ровно эти три вещи:
+ *
+ *  1. Единица хореографии — восьмёрка, а не доля. Движение живёт восемь
+ *     счётов и меняется на границе, а не каждый раз заново.
+ *  2. Тело отвечает на то, что происходит в музыке: на брейке оно почти
+ *     спокойно, на дропе идёт в полную. Уровень секции приходит из офлайн-
+ *     разбора трека (scripts/lib/sections.mjs).
+ *  3. Удар идёт цепочкой снизу вверх с запаздыванием, и телу нужен замах —
+ *     оно уходит в обратную сторону ПЕРЕД долей. Без замаха любое движение
+ *     читается как запоздалая реакция.
+ *
+ * Только чистая математика: ни three.js, ни DOM. Поэтому покрыто тестами, а
+ * страница забирает этот файл целиком (см. cabinet.astro).
+ */
+
+const PHRASE_BEATS = 8;    // восьмёрка
+const BEATS_PER_BAR = 4;
+
+/* Насколько крупно двигаемся в секции такого уровня. */
+const LEVEL_GAIN = { low: 0.42, mid: 0.72, high: 1 };
+
+/* Фаза удара, за которую тело успевает прийти в акцент. Меньше — резче.
+   Ниже ATTACK участвует в склейке, поэтому вынесен отдельно. */
+const ATTACK = 0.06;
+
+function mod1(x) {
+	const r = x % 1;
+	return r < 0 ? r + 1 : r;
+}
+
+/**
+ * Огибающая одной доли: замах → удар → оседание.
+ *
+ * Прошлая версия была просто exp(-phase*5) — тело дёргалось строго после
+ * доли и всегда одинаково. Здесь перед долей появляется отрицательный
+ * участок: корпус уходит в противоход, готовясь к акценту. Функция
+ * непрерывна и на стыке долей (значение при phase→1 совпадает с phase=0),
+ * иначе на каждом такте был бы щелчок.
+ *
+ * @param {number} phase доля в пределах [0,1), дробная часть номера доли
+ * @returns {number} примерно в диапазоне [-prep, 1]
+ */
+function hit(phase, { decay = 5, prep = 0.28, prepWidth = 0.22 } = {}) {
+	const p = mod1(phase);
+	if (p < ATTACK) {
+		// быстрый выход из замаха в удар, сглаженный smoothstep
+		const k = p / ATTACK;
+		return -prep + (1 + prep) * k * k * (3 - 2 * k);
+	}
+	const settle = Math.exp(-(p - ATTACK) * decay);
+	const prepAmt = prep * Math.exp(-(((1 - p) / prepWidth) ** 2));
+	return settle - prepAmt;
+}
+
+/** Номер восьмёрки и место внутри неё. */
+function phraseOf(beatIndex) {
+	const phrase = Math.floor(beatIndex / PHRASE_BEATS);
+	const beatInPhrase = ((beatIndex % PHRASE_BEATS) + PHRASE_BEATS) % PHRASE_BEATS;
+	return { phrase, beatInPhrase, isPhraseStart: beatInPhrase === 0 };
+}
+
+/** Каналы, которыми грув говорит с скелетом. Всё — добавка к позе из клипа. */
+function emptyPose() {
+	return {
+		bob: 0,          // Hips.position.y, метры
+		hipTwist: 0,     // Hips.rotation.y
+		hipTilt: 0,      // Hips.rotation.z
+		spineBend: 0,    // Spine.rotation.x
+		chestTwist: 0,   // Spine2.rotation.y
+		chestTilt: 0,    // Spine2.rotation.z
+		headNod: 0,      // Head.rotation.x
+		headTurn: 0,     // Head.rotation.y
+		armL: 0, armR: 0,        // Arm.rotation.z — развод в стороны
+		armLx: 0, armRx: 0,      // Arm.rotation.x — вперёд/назад
+		elbowL: 0, elbowR: 0,    // ForeArm.rotation.x
+	};
+}
+
+function resetPose(pose) {
+	for (const k in pose) pose[k] = 0;
+	return pose;
+}
+
+/**
+ * Контекст одного кадра. `at(lag)` — значение огибающей с запаздыванием в
+ * долях: именно им строится цепочка «таз → корпус → грудь → голова».
+ */
+function grooveContext(beatFloat, { mirror = 1, decay } = {}) {
+	const opts = decay === undefined ? undefined : { decay };
+	return {
+		beat: beatFloat,
+		mirror,
+		at: (lag = 0) => hit(beatFloat - lag, opts),
+	};
+}
+
+/* Ритмические ворота. Гасят или усиливают движение с периодом в несколько
+   долей. Раньше похожие вещи писались через `beatIndex % 2`, и на переходе
+   значение прыгало — тело щёлкало. Косинус меняется плавно, поэтому
+   акцент нарастает и спадает, а не переключается. */
+const every = (beat, beats, offset = 0) =>
+	(1 - Math.cos((Math.PI * 2 * (beat - offset)) / beats)) / 2;
+
+const MOVES = {
+	/* База клубного танца: тело уходит вниз на каждую долю, корпус и голова
+	   догоняют с задержкой. Задержка и есть то, что отличает живое тело от
+	   набора одновременно повернувшихся костей. */
+	bounce(pose, c) {
+		pose.bob = -0.05 * c.at(0);
+		pose.spineBend = 0.055 * c.at(0.07);
+		pose.chestTilt = 0.045 * c.at(0.11) * c.mirror;
+		pose.headNod = 0.14 * c.at(0.16);
+		// руки качаются раз в две доли, в противофазе друг другу
+		const swing = Math.sin(Math.PI * c.beat) * c.mirror;
+		pose.armL = 0.16 * swing - 0.09 * c.at(0.09);
+		pose.armR = -0.16 * swing - 0.09 * c.at(0.09);
+		pose.elbowL = -0.18 * c.at(0.12);
+		pose.elbowR = -0.18 * c.at(0.12);
+	},
+
+	/* Акцент на слабую долю — туда, где в электронной музыке сидит хлопок.
+	   На 1 и 3 тело почти спокойно, на 2 и 4 идёт снап плечом и головой. */
+	backbeat(pose, c) {
+		const back = 0.15 + 0.85 * every(c.beat, 2, 1);
+		pose.bob = -0.022 * c.at(0);
+		pose.hipTilt = 0.075 * c.at(0) * back * c.mirror;
+		pose.chestTwist = 0.11 * c.at(0.1) * back * c.mirror;
+		pose.headTurn = 0.13 * c.at(0.15) * back * c.mirror;
+		pose.armL = 0.2 * c.at(0.05) * back * c.mirror;
+		pose.armR = -0.11 * c.at(0.05) * back * c.mirror;
+		pose.elbowR = -0.2 * c.at(0.08) * back;
+	},
+
+	/* Волна: импульс проходит снизу вверх за две трети доли, раз в две доли.
+	   Тот же приём, что и в bounce, но с крупными задержками — тогда цепочка
+	   видна как отдельное движение, а не как оттяжка. */
+	wave(pose, c) {
+		const gate = every(c.beat, 2);
+		pose.hipTwist = 0.1 * c.at(0) * gate * c.mirror;
+		pose.bob = -0.025 * c.at(0.06) * gate;
+		pose.spineBend = 0.085 * c.at(0.12) * gate;
+		pose.chestTilt = 0.07 * c.at(0.24) * gate * c.mirror;
+		pose.headNod = 0.16 * c.at(0.36) * gate;
+		pose.armL = 0.13 * c.at(0.3) * gate;
+		pose.armR = 0.13 * c.at(0.3) * gate;
+	},
+
+	/* Перекат веса восьмёркой за четыре счёта, грудь и голова отстают по
+	   фазе. Ударов почти нет — это то, чем танцуют на проигрыше. */
+	sway(pose, c) {
+		const slow = (Math.PI * c.beat) / 2;
+		pose.hipTwist = 0.14 * Math.sin(slow) * c.mirror;
+		pose.hipTilt = 0.08 * Math.sin(slow * 2);
+		pose.chestTwist = -0.1 * Math.sin(slow - 0.5) * c.mirror;
+		pose.headTurn = 0.09 * Math.sin(slow - 0.9) * c.mirror;
+		pose.bob = -0.018 * c.at(0);
+		pose.armL = 0.1 * Math.sin(slow - 0.6);
+		pose.armR = -0.1 * Math.sin(slow - 0.6);
+	},
+
+	/* Руки вверх по очереди, каждые две доли, таз уходит в противоход.
+	   Самое крупное движение в наборе — под дроп. */
+	pump(pose, c) {
+		const alt = Math.sin((Math.PI * c.beat) / 2);
+		const up = Math.max(0, alt);
+		const down = Math.max(0, -alt);
+		pose.armL = -0.55 * up - 0.1 * c.at(0.05);
+		pose.armR = -0.55 * down - 0.1 * c.at(0.05);
+		pose.armLx = -0.25 * up;
+		pose.armRx = -0.25 * down;
+		pose.elbowL = -0.3 * up;
+		pose.elbowR = -0.3 * down;
+		pose.hipTwist = 0.12 * alt * c.mirror;
+		pose.chestTwist = -0.1 * alt * c.mirror;
+		pose.bob = -0.045 * c.at(0);
+		pose.headNod = 0.1 * c.at(0.15);
+	},
+
+	/* Почти покой: перенос веса за восемь счётов и медленный кивок.
+	   Нужен, чтобы на брейке персонаж не продолжал жарить как на дропе. */
+	chill(pose, c) {
+		const slow = (Math.PI * c.beat) / 4;
+		pose.hipTilt = 0.05 * Math.sin(slow);
+		pose.chestTilt = -0.035 * Math.sin(slow - 0.4);
+		pose.headTurn = 0.07 * Math.sin(slow / 2) * c.mirror;
+		pose.headNod = 0.06 * c.at(0.2);
+		pose.bob = -0.012 * c.at(0);
+	},
+};
+
+/* Что уместно на каком уровне энергии. Порядок внутри пула — это порядок
+   смены движений по восьмёркам, поэтому соседние должны отличаться. */
+const MOVE_POOLS = {
+	low: ['chill', 'sway'],
+	mid: ['sway', 'wave', 'backbeat'],
+	high: ['bounce', 'pump', 'backbeat', 'wave'],
+};
+
+/**
+ * Движение на восьмёрку. Детерминированно от номера восьмёрки: одинаковый
+ * трек танцуется одинаково, и это удобно проверять.
+ */
+function pickMove(level, phrase) {
+	const pool = MOVE_POOLS[level] || MOVE_POOLS.mid;
+	return pool[((phrase % pool.length) + pool.length) % pool.length];
+}
+
+/** Чётные восьмёрки зеркалим — иначе петля читается как зацикленная гифка. */
+function mirrorFor(phrase) {
+	return phrase % 2 === 0 ? 1 : -1;
+}
+
+/**
+ * Считает позу кадра в переданный объект (без аллокаций на кадр).
+ * @param {object} pose из emptyPose()
+ * @param {string} moveName ключ MOVES
+ * @param {object} ctx из grooveContext()
+ * @param {number} gain общий масштаб, обычно LEVEL_GAIN[level]
+ */
+function grooveTo(pose, moveName, ctx, gain = 1) {
+	resetPose(pose);
+	(MOVES[moveName] || MOVES.sway)(pose, ctx);
+	if (gain !== 1) for (const k in pose) pose[k] *= gain;
+	return pose;
+}
+
+/**
+ * Где должен стоять клип, чтобы его собственная доля совпадала с долей трека.
+ *
+ * Клип запускается в произвольный момент, и без этого его сетка живёт своей
+ * жизнью: темп совпадает, а шаги приходятся мимо. Достаточно выставить время
+ * один раз — дальше клип и музыка идут от одних часов.
+ */
+function clipAlignTime(trackBeatFloat, clipBeats, clipDuration) {
+	const beatsIn = ((trackBeatFloat % clipBeats) + clipBeats) % clipBeats;
+	return (beatsIn / clipBeats) * clipDuration;
+}
+
+/**
+ * Движения ГОЛОВЫ. Отдельно от groove.mjs, потому что там движения телесные:
+ * из 5-10 каналов каждого к голове применимы 3-4, и на голове все шесть
+ * схлопываются в два-три неразличимых. Вариативность там живёт в руках и тазе,
+ * которых у маскота нет.
+ *
+ * Здесь набор строится вокруг того, что голова реально умеет: кивок, поворот,
+ * наклон к плечу, выдвижение шеи и восьмёрка. Последние три в groove.mjs
+ * отсутствуют вовсе, хотя для танца головой они самые характерные.
+ */
+
+
+/* Огибающая доли для ГОЛОВЫ. Форма та же, что в groove.mjs, но атака втрое
+   длиннее. У тела акцент шёл добавкой поверх клипа мокапа, и мгновенный выход
+   в пик там маскировался. Здесь вся анимация - это огибающая, и атака в 0.06
+   доли (26 мс на 140 BPM, полтора кадра) читается как телепорт, а не как удар.
+   0.14 доли - это 60 мс, около четырёх кадров: голова с её массой примерно так
+   и разгоняется. */
+const headATTACK = 0.14, PREP = 0.28, DECAY = 5;
+const headMod1 = (x) => { const r = x % 1; return r < 0 ? r + 1 : r; };
+
+
+
+function headHit(phase) {
+	const p = headMod1(phase);
+	if (p < headATTACK) {
+		const k = p / headATTACK;
+		return -PREP + (1 + PREP) * k * k * (3 - 2 * k);
+	}
+	return Math.exp(-(p - headATTACK) * DECAY) - PREP * Math.exp(-(((1 - p) / 0.22) ** 2));
+}
+
+/* Среднее огибающей за долю. Нужно, чтобы вертикальный ход центрировался
+   вокруг покоя: `headHit()` идёт от -0.28 до 1.0, среднее 0.193, и голова уезжала
+   вниз в 3.6 раза сильнее, чем вверх. Много долей подряд это читается как
+   «персонаж проседает», а не «качает». Отскок вверх должен быть, иначе это
+   не подпрыгивание, а оседание. */
+const HIT_MEAN = 0.193;
+const bounce = (b) => headHit(b) - HIT_MEAN;
+
+function emptyHead() {
+	return { nodX: 0, turnY: 0, rollZ: 0, pushZ: 0, bobY: 0, squash: 0, earExtra: 0 };
+}
+
+/* Плавные ворота с периодом в N долей. Через них строятся движения,
+   которые живут дольше одной доли, и они не дают щелчка на границе. */
+const cyc = (b, beats, phase = 0) => Math.sin((Math.PI * 2 * (b - phase)) / beats);
+
+const HEAD_MOVES = {
+	/** Кивок. База: то, с чего начинается любой танец головой. */
+	nod(p, b) {
+		const h = headHit(b);
+		p.nodX = 0.30 * h;
+		p.bobY = -0.075 * bounce(b);
+		p.squash = h;
+		p.turnY = 0.10 * cyc(b, 8);
+	},
+
+	/** Поворот влево-вправо, смена стороны каждые две доли. */
+	turn(p, b) {
+		const s = cyc(b, 4);
+		p.turnY = 0.52 * s;
+		p.rollZ = -0.10 * s;
+		p.nodX = 0.12 * headHit(b);
+		p.bobY = -0.045 * bounce(b);
+		p.squash = 0.4 * headHit(b);
+	},
+
+	/** Наклон к плечу - маятник. В groove.mjs такого канала нет вообще. */
+	roll(p, b) {
+		const s = cyc(b, 4);
+		p.rollZ = 0.42 * s;
+		p.turnY = 0.14 * s;
+		p.nodX = 0.10 * headHit(b);
+		p.bobY = -0.05 * bounce(b);
+		p.squash = 0.5 * headHit(b);
+		p.earExtra = 0.25 * s;
+	},
+
+	/** Голубь: шея выдвигается вперёд на долю и возвращается. Дэнсхолл. */
+	pigeon(p, b) {
+		const h = headHit(b);
+		const alt = cyc(b, 4);   // плавно, а не sign(): резкая смена знака сама даёт рывок
+		p.pushZ = 0.14 * h;
+		p.nodX = -0.10 * h;
+		p.turnY = 0.16 * alt * (1 - Math.abs(h));
+		p.bobY = -0.035 * bounce(b);
+		p.squash = 0.35 * h;
+	},
+
+	/** Восьмёрка: поворот и наклон в квадратуре, движение непрерывное. */
+	eight(p, b) {
+		p.turnY = 0.34 * cyc(b, 4);
+		p.rollZ = 0.26 * cyc(b, 4, 1);
+		p.nodX = 0.13 * cyc(b, 2) + 0.08 * headHit(b);
+		p.bobY = -0.045 * bounce(b);
+		p.squash = 0.4 * headHit(b);
+		p.earExtra = 0.18 * cyc(b, 4, 1);
+	},
+
+	/** Почти покой - для брейка и для паузы. */
+	chill(p, b) {
+		p.turnY = 0.16 * cyc(b, 16);
+		p.rollZ = 0.07 * cyc(b, 12);
+		p.nodX = 0.05 * headHit(b) + 0.03 * cyc(b, 8);
+		p.bobY = -0.02 * bounce(b);
+		p.squash = 0.2 * headHit(b);
+	},
+};
+
+const MOVE_NAMES = Object.keys(HEAD_MOVES);
+
+function reset(p) { for (const k in p) p[k] = 0; return p; }
+
+/**
+ * Поза с кроссфейдом. Это то, чего не было: раньше движение переключалось
+ * мгновенно на границе восьмёрки, новая функция считала позу с нуля, старая
+ * обрывалась, и каналы прыгали. Здесь обе позы ведутся параллельно и
+ * смешиваются по весу за FADE_BEATS.
+ */
+const FADE_BEATS = 1.5;
+const smooth = (x) => x * x * (3 - 2 * x);
+
+function headPose(out, a, b, beat, fromBeat, gain = 1) {
+	const tmpA = reset(headPose._a || (headPose._a = emptyHead()));
+	(HEAD_MOVES[a] || HEAD_MOVES.chill)(tmpA, beat);
+	let w = 1;
+	if (b && fromBeat != null) {
+		w = Math.min(1, Math.max(0, (beat - fromBeat) / FADE_BEATS));
+		if (w < 1) {
+			const tmpB = reset(headPose._b || (headPose._b = emptyHead()));
+			(HEAD_MOVES[b] || HEAD_MOVES.chill)(tmpB, beat);
+			const k = smooth(w);
+			for (const key in out) out[key] = (tmpB[key] * (1 - k) + tmpA[key] * k) * gain;
+			return out;
+		}
+	}
+	for (const key in out) out[key] = tmpA[key] * gain;
+	return out;
+}
+
+/* Постоянные времени по каналам. Голова тяжелее глаз, поворот медленнее кивка,
+   сплющивание быстрее всего - оно и должно читаться как удар. */
+const TAU = { nodX: .045, turnY: .075, rollZ: .075, pushZ: .06, bobY: .05, squash: .04, earExtra: .085 };
+
+/**
+ * Критически задемпфированная пружина по всем каналам позы, взятая ТОЧНЫМ
+ * решением, а не численным интегрированием.
+ *
+ * Зачем: `headHit()` выходит из замаха в пик за 0.06 доли, а это 26 мс на 140 BPM -
+ * меньше двух кадров. У человека рывок маскировал клип мокапа, здесь же вся
+ * анимация головы и есть эта огибающая, поэтому канал прыгал на 1.06 за кадр.
+ * Голова имеет массу и долететь за 26 мс не может: движение задаёт ЦЕЛЬ,
+ * а показываем то, что за целью догоняет. Перелёт пружины заодно добавляет
+ * жизни там, где раньше был щелчок.
+ *
+ * Почему точное решение. Сначала стояла явная схема Эйлера с зажимом шага
+ * до 1/30 с. При tau = 0.04 это даёт w*h = 0.83, и схема расходится: на 30
+ * кадрах squash улетал в +-429, масштаб по Y в +-52, голову плющило в блин и
+ * выворачивало наизнанку отрицательным масштабом. Зажим, поставленный ради
+ * безопасности, ровно и загонял шаг в неустойчивую зону.
+ *
+ * Здесь d = x - target решается аналитически: для критического демпфирования
+ * d(t) = (d0 + (v0 + w*d0)*t) * exp(-w*t). Устойчиво при любом шаге, и после
+ * возврата из фоновой вкладки просто садится в цель, а не взрывается.
+ */
+function makeFollower() {
+	const x = emptyHead(), v = emptyHead();
+	return function follow(target, dt) {
+		if (!(dt > 0)) return x;
+		for (const k in x) {
+			const w = 1 / TAU[k];
+			const d0 = x[k] - target[k];
+			const c = v[k] + w * d0;
+			const e = Math.exp(-w * dt);
+			x[k] = target[k] + (d0 + c * dt) * e;
+			v[k] = (v[k] - w * c * dt) * e;
+		}
+		return x;
+	};
+}
+
+/**
+ * Хореография трека: какое движение когда играет и с каким размахом.
+ *
+ * Раньше это жило прямо в странице и считалось на лету. Из-за этого нельзя было
+ * посмотреть план целиком до запуска, а раскладка движений по уровням дублировалась
+ * между страницей и любым скриптом. Теперь логика одна и покрыта тестами, а
+ * страница и CLI зовут одну функцию.
+ */
+
+/* Какие движения уместны на каком уровне энергии. Курировано руками: имена
+   клипов мы знаем, а «подходящесть» из файла не вытащить. Ходьба и бег на
+   брейке выглядят абсурдно, Idle на дропе вял, Death и Sitting не берём вовсе. */
+const POOLS = {
+	robot:  { low: ['Idle', 'Standing'], mid: ['Yes', 'Wave', 'No'], high: ['Dance', 'Jump', 'ThumbsUp'] },
+	xbot:   { low: ['idle'], mid: ['agree', 'headShake'], high: ['agree', 'headShake', 'run'] },
+	fox:    { low: ['Survey'], mid: ['Walk'], high: ['Run'] },
+	human:  { low: ['DANCE_SHUFFLE'], mid: ['DANCE_SHUFFLE'], high: ['DANCE_SHUFFLE'] },
+	mascot: { low: ['chill'], mid: ['nod', 'turn'], high: ['roll', 'eight', 'pigeon'] },
+};
+
+/* Насколько крупно двигаемся на секции такого уровня. Живёт в groove.mjs:
+   оба модуля склеиваются в один инлайновый скрипт страницы, и второе
+   объявление того же const уронило бы её целиком. */
+
+
+
+/* Вкус сдвигает уровень энергии, а не только громкость: любимый трек персонаж
+   проживает вместе с тобой, фоновый едва замечает, нетипичный слушает задумчиво. */
+const TASTE = {
+	fav: { lift: 1, gain: 1.0 },
+	bg:  { lift: 0, gain: 0.55 },
+	odd: { lift: -1, gain: 0.3 },
+};
+
+const LEVELS = ['low', 'mid', 'high'];
+const LETTER = { l: 'low', m: 'mid', h: 'high' };
+
+const levelAt = (bars, bar) => LETTER[(bars || '')[bar]] || 'mid';
+
+function shiftLevel(level, lift) {
+	const i = LEVELS.indexOf(level);
+	return LEVELS[Math.max(0, Math.min(LEVELS.length - 1, (i < 0 ? 1 : i) + lift))];
+}
+
+/* Между событиями бывает по 15 тактов. Без запасного таймера персонаж замирал
+   бы на одном движении почти на полминуты. */
+const IDLE_BEATS = 32;
+
+/**
+ * План на весь трек. Детерминирован от (такт, уровень, вкус, модель) — поэтому
+ * будущее известно точно, и можно показать не только текущее движение, но и
+ * следующее.
+ *
+ * @returns {Array<{time,bar,beat,clip,level,gain,onEvent}>}
+ */
+function planTrack({ bpm, offset = 0, bars = '', events = [], clips = [], model = 'mascot', taste = 'fav' }) {
+	if (!bpm || !clips.length) return [];
+	const beatDur = 60 / bpm;
+	const evt = new Set(events);
+	const { lift, gain: tasteGain } = TASTE[taste] || TASTE.fav;
+	const pools = POOLS[model] || {};
+
+	let clip = clips[0], lastEvent = -1, lastSwitch = -Infinity;
+	const out = [];
+	for (let beat = 0; beat < bars.length * 4; beat++) {
+		const bar = Math.floor(beat / 4);
+		const level = levelAt(bars, bar);
+		const onEvent = evt.has(bar) && bar !== lastEvent;
+		if (!onEvent && beat - lastSwitch <= IDLE_BEATS) continue;
+		if (onEvent) lastEvent = bar;
+		lastSwitch = beat;
+
+		const shifted = shiftLevel(level, lift);
+		const pool = (pools[shifted] || clips).filter((c) => clips.includes(c));
+		if (!pool.length) continue;
+		// не повторяем то, что уже играет, иначе событие не читается
+		const other = pool.filter((c) => c !== clip);
+		const src = other.length ? other : pool;
+		const pick = src[Math.abs(bar * 7 + shifted.length) % src.length];
+		if (pick === clip) continue;
+
+		clip = pick;
+		out.push({
+			time: +(bar * 4 * beatDur + offset).toFixed(3),
+			bar, beat, clip, level,
+			gain: +(LEVEL_GAIN[shifted] * tasteGain).toFixed(3),
+			onEvent,
+		});
+	}
+	return out;
+}
+
+/**
+ * Во сколько раз ускорить клип, чтобы его длина стала целым числом долей.
+ * Тогда петля садится на такт и не уползает, для любой анимации.
+ */
+function clipTimeScale(clipDuration, bpm) {
+	const beatDur = 60 / bpm;
+	const beats = Math.max(1, Math.round(clipDuration / beatDur));
+	return clipDuration / (beats * beatDur);
+}
+
+window.__dr = { hit: headHit, bounce, emptyHead, headPose, makeFollower, MOVE_NAMES, phraseOf, LEVEL_GAIN,
+	POOLS, planTrack, shiftLevel, clipTimeScale, levelAt, IDLE_BEATS };</script> <script type="importmap">
+			{ "imports": {
+				"three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+			} }
+		</script> <script type="module">const base = "";
+
+			import * as THREE from 'three';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+			// наши аватары сжаты meshopt, без декодера GLTFLoader на них падает
+			import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+			const G = window.__dr;
+			const track = JSON.parse(document.getElementById('dr-track').textContent);
+			const LV = { l: 'low', m: 'mid', h: 'high' };
+
+			/* Ручной сигнал вместо профиля вкуса. Он не просто крутит громкость:
+			   по шкале из обсуждения любимый трек персонаж проживает вместе с
+			   тобой, фоновый едва замечает, а нетипичный слушает задумчиво.
+			   Поэтому вкус СДВИГАЕТ уровень энергии - а значит и набор движений,
+			   не только размах. Структура трека даёт базу, вкус её двигает. */
+			const TASTE = [
+				{ id: 'fav', name: 'любимый',    lift: 1,  gain: 1.0 },
+				{ id: 'bg',  name: 'фоновый',    lift: 0,  gain: 0.55 },
+				{ id: 'odd', name: 'нетипичный', lift: -1, gain: 0.3 },
+			];
+			let taste = TASTE[0];
+
+			const MODELS = [
+				{ id: 'mascot', name: 'маскот',  file: null, cam: [0, 1.35, 3.9], look: [0, 1.3, 0] },
+				{ id: 'robot',  name: 'робот',   file: `${base}/3d/zoo/RobotExpressive.glb` },
+				{ id: 'xbot',   name: 'xbot',    file: `${base}/3d/zoo/Xbot.glb` },
+				{ id: 'fox',    name: 'лис',     file: `${base}/3d/zoo/Fox.glb` },
+				{ id: 'human',  name: 'человек', file: `${base}/3d/avatar.glb` },
+			];
+
+			const scene = new THREE.Scene();
+			scene.background = new THREE.Color(0x0a0c10);
+			const cam = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 200);
+			const rr = new THREE.WebGLRenderer({ antialias: true });
+			rr.setPixelRatio(Math.min(devicePixelRatio, 2));
+			rr.setSize(innerWidth, innerHeight);
+			rr.outputColorSpace = THREE.SRGBColorSpace;
+			rr.toneMapping = THREE.ACESFilmicToneMapping;
+			document.body.appendChild(rr.domElement);
+			scene.environment = new THREE.PMREMGenerator(rr).fromScene(new RoomEnvironment(), 0.04).texture;
+			scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+			const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(2, 4, 3); scene.add(key);
+			const rimA = new THREE.PointLight(0x00ff90, 10, 20); rimA.position.set(-3, 2, -2); scene.add(rimA);
+			const rimB = new THREE.PointLight(0xff3d8b, 8, 20); rimB.position.set(3, 1, -2); scene.add(rimB);
+			scene.add(new THREE.GridHelper(14, 28, 0x1c3a2e, 0x14231d));
+			const ctl = new OrbitControls(cam, rr.domElement);
+			ctl.enablePan = false; ctl.enableDamping = true;
+
+			function buildMascot() {
+				const soft = (c, r = .55) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: .02 });
+				const S = 0xf2f4f2, D = 0x1a1f24, A = 0x00ff90;
+				const neck = new THREE.Group(), head = new THREE.Group();
+				neck.add(head); neck.position.y = 1.35;
+				const sk = new THREE.Mesh(new THREE.SphereGeometry(.9, 48, 36), soft(S)); sk.scale.set(1, .92, .95); head.add(sk);
+				const ch = new THREE.Mesh(new THREE.SphereGeometry(.78, 40, 28), soft(S)); ch.position.y = -.2; ch.scale.set(1.04, .78, .98); head.add(ch);
+				const eg = new THREE.CapsuleGeometry(.09, .11, 8, 20);
+				const eyes = [-1, 1].map((s) => { const e = new THREE.Mesh(eg, soft(D, .35)); e.position.set(s * .31, -.02, .78); head.add(e); return e; });
+				[-1, 1].forEach((s) => { const g = new THREE.Mesh(new THREE.SphereGeometry(.032, 12, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })); g.position.set(s * .31 + .04, .06, .86); head.add(g); });
+				const mo = new THREE.Mesh(new THREE.TorusGeometry(.1, .02, 10, 24, Math.PI * .85), soft(D, .4));
+				mo.rotation.z = Math.PI * 1.075; mo.position.set(0, -.24, .79); head.add(mo);
+				[-1, 1].forEach((s) => { const b = new THREE.Mesh(new THREE.CircleGeometry(.1, 24), new THREE.MeshBasicMaterial({ color: 0xff9aa8, transparent: true, opacity: .5 })); b.position.set(s * .47, -.3, .66); b.lookAt(s * 1.6, -.4, 2); head.add(b); });
+				const ears = [-1, 1].map((s) => {
+					const p = new THREE.Group(); p.position.set(s * .38, .7, -.05);
+					const e = new THREE.Mesh(new THREE.CapsuleGeometry(.165, .45, 10, 20), soft(S)); e.position.y = .36; e.scale.z = .5; p.add(e);
+					const i = new THREE.Mesh(new THREE.CapsuleGeometry(.095, .3, 8, 16), soft(0xffc9d2, .7)); i.position.set(0, .38, .07); i.scale.z = .4; p.add(i);
+					p.rotation.z = s * .15; p.rotation.x = -.08; head.add(p); return { p, s };
+				});
+				head.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(.99, .068, 16, 64, Math.PI * .98), soft(D, .4)), {}));
+				const pad = new THREE.Mesh(new THREE.TorusGeometry(.99, .075, 14, 32, Math.PI * .3), soft(A, .45));
+				pad.rotation.z = Math.PI * .35; head.add(pad);
+				const rings = [];
+				[-1, 1].forEach((s) => {
+					const c = new THREE.Mesh(new THREE.CylinderGeometry(.32, .34, .23, 32), soft(D, .4));
+					c.rotation.z = Math.PI / 2; c.position.set(s * .92, -.02, 0); head.add(c);
+					const r = new THREE.Mesh(new THREE.TorusGeometry(.18, .025, 10, 28), new THREE.MeshBasicMaterial({ color: A }));
+					r.rotation.y = Math.PI / 2; r.position.set(s * 1.04, -.02, 0); head.add(r); rings.push(r);
+				});
+				/* Тела нет намеренно. Раньше голова ездила по вертикали
+				   относительно статичного корпуса - шея телескопировала, и это
+				   читалось как дрожь. Кадр всё равно на голове крупным планом. */
+				const wrap = new THREE.Group(); wrap.add(neck);
+				wrap.userData = { neck, head, ears, rings, eyes };
+				return wrap;
+			}
+
+			const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+			for (const m of MODELS) {
+				if (!m.file) { m.group = buildMascot(); m.clips = G.MOVE_NAMES; scene.add(m.group); m.group.visible = false; continue; }
+				try {
+					const g = await loader.loadAsync(m.file);
+					m.group = g.scene; m.mixer = new THREE.AnimationMixer(g.scene);
+					m.clips = g.animations.map((a) => a.name || 'clip');
+					m.actions = {};
+					g.animations.forEach((a) => {
+						const ac = m.mixer.clipAction(a);
+						ac.setLoop(THREE.LoopRepeat, Infinity);
+						m.actions[a.name || 'clip'] = ac;
+					});
+					const box = new THREE.Box3().setFromObject(g.scene);
+					const sz = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+					const s = 2.4 / Math.max(sz.y, 0.001);
+					g.scene.scale.setScalar(s);
+					g.scene.position.set(-c.x * s, -box.min.y * s, -c.z * s);
+					scene.add(g.scene); g.scene.visible = false;
+				} catch (e) { console.warn('не загрузилась модель', m.id, e); m.broken = true; }
+			}
+			const ALIVE = MODELS.filter((m) => !m.broken);
+
+			const audio = document.getElementById('dr-audio');
+			const beatDur = () => 60 / track.bpm;
+			let playing = false;
+			const beatNow = () => {
+				if (!playing || audio.paused) return null;
+				const s = audio.currentTime - (track.offset || 0);
+				if (s < 0) return null;
+				const bf = s / beatDur();
+				return { bf, idx: Math.floor(bf), lvl: LV[(track.bars || '')[Math.floor(bf / 4)]] || 'mid' };
+			};
+
+			let cur = ALIVE[0], clip = cur.clips[0], auto = true, prevClip = null, switchBeat = null;
+			let flash = 0, planAt = -1;
+
+			/* Раньше здесь жила вторая копия выбора движения - живая, рядом с
+			   предсказанной для полосы. Две копии одного правила разъезжаются:
+			   полоса показывала бы одно, персонаж делал другое. Теперь и то и
+			   другое читает один план. */
+			function followPlan(bt) {
+				let i = -1;
+				while (i + 1 < plan.length && plan[i + 1].time <= audio.currentTime) i++;
+				if (i === planAt) return;
+				planAt = i;
+				const it = plan[i];
+				if (!it || it.clip === clip) return;
+				if (it.onEvent) flash = 1;
+				prevClip = clip; switchBeat = bt.bf; clip = it.clip; applyClip();
+			}
+
+			const tBox = document.getElementById('dr-taste');
+			TASTE.forEach((x) => {
+				const b = document.createElement('button');
+				b.textContent = x.name;
+				b.onclick = () => {
+					taste = x;
+					TASTE.forEach((y) => y.btn.classList.toggle('dr-on', y === x));
+					// пересобрать движение сразу, иначе смена вкуса не читается
+					planAt = -1;
+					renderPlan();
+				};
+				tBox.appendChild(b); x.btn = b;
+			});
+			TASTE[0].btn.classList.add('dr-on');
+
+			/* План на весь трек считает тот же модуль, что и scripts/track-plan.mjs.
+			   Он детерминирован от (такт, уровень, вкус, модель), поэтому будущее
+			   известно точно - можно показать не только текущее движение, но и
+			   следующее, как в Just Dance, и распечатать всю раскладку в консоли
+			   до запуска страницы. */
+			const buildPlan = () => G.planTrack({
+				bpm: track.bpm, offset: track.offset, bars: track.bars, events: track.events,
+				clips: cur.clips || [], model: cur.id, taste: taste.id,
+			});
+			let plan = [], planEls = [];
+			const lineEl = document.getElementById('dr-line');
+			const headEl = document.getElementById('dr-playhead');
+			const countEl = document.getElementById('dr-count');
+			function renderPlan() {
+				plan = buildPlan();
+				[...lineEl.querySelectorAll('.dr-seg')].forEach((e) => e.remove());
+				const dur = track.duration || 120;
+				planEls = plan.map((it, i) => {
+					const end = i + 1 < plan.length ? plan[i + 1].time : dur;
+					const el = document.createElement('div');
+					el.className = 'dr-seg';
+					el.style.left = (it.time / dur * 100) + '%';
+					el.style.width = ((end - it.time) / dur * 100) + '%';
+					el.innerHTML = `${it.clip}<i>${it.level}${it.onEvent ? ' ⚡' : ''}</i>`;
+					lineEl.appendChild(el);
+					return el;
+				});
+			}
+
+			/* Разбор трека: те же числа, что печатает scripts/track-plan.mjs.
+			   Показываем их на странице, чтобы «почему он двигается именно так»
+			   можно было проверить не открывая терминал. */
+			const panel = document.getElementById('dr-panel');
+			const panelIn = document.getElementById('dr-panel-in');
+			const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+			function renderPanel() {
+				const levels = [...(track.bars || '')].map((ch) => LV[ch] || 'mid');
+				const evt = new Set(track.events || []);
+				const n = (l) => levels.filter((x) => x === l).length;
+				const dur = track.duration || 120;
+				const rows = plan.map((it, i) => {
+					const held = ((i + 1 < plan.length ? plan[i + 1].time : dur) - it.time) / beatDur();
+					return `<tr class="${it.onEvent ? 'evt' : ''}">
+						<td>${mmss(it.time)}</td><td class="num">${it.bar}</td><td>${it.level}</td>
+						<td>${it.clip}</td><td class="num">${it.gain.toFixed(2)}</td>
+						<td class="num">${Math.round(held)}</td>
+						<td class="num">${it.onEvent ? 'смена в музыке' : 'запасной таймер'}</td></tr>`;
+				}).join('');
+				panelIn.innerHTML = `
+					<h2>${track.title}</h2>
+					<p>что скрипт услышал в треке и во что это превратилось</p>
+					<h3>доли</h3>
+					<div class="dr-kv">
+						<div><b>${track.bpm}</b><span>BPM</span></div>
+						<div><b>${track.offset}с</b><span>смещение первой доли</span></div>
+						<div><b>${(track.beatQuality * 100).toFixed(0)}%</b><span>онсетов попало в долю (случайно ~23%)</span></div>
+						<div><b>×${track.beatRatio}</b><span>${track.beatSync ? 'выше порога 1.5 — синхронизируемся' : 'ниже порога — бита нет'}</span></div>
+					</div>
+					<h3>секции — ${levels.length} тактов, событий ${(track.events || []).length}</h3>
+					<div class="dr-bars">${levels.map((l, i) =>
+						`<i class="${l}${evt.has(i) ? ' evt' : ''}"></i>`).join('')}</div>
+					<p style="margin-top:6px">тише ← низкая, средняя, высокая энергия → громче · точкой отмечен такт, где уровень сменился</p>
+					<h3>план: ${cur.name}, ${taste.name} трек — ${plan.length} смен, ${(plan.length / (dur / 60)).toFixed(1)} движ/мин</h3>
+					<table class="dr-tbl"><thead><tr>
+						<th>время</th><th>такт</th><th>энергия</th><th>движение</th>
+						<th>размах</th><th>долей</th><th>почему</th>
+					</tr></thead><tbody>${rows}</tbody></table>
+					<h3>то же самое из терминала</h3>
+					<p><code>node scripts/track-plan.mjs --show public/audio/файл.mp3</code> — разобрать и показать<br>
+					<code>node scripts/track-plan.mjs --all</code> — пересобрать <code>src/data/tracks.json</code> для всех треков</p>`;
+			}
+			document.getElementById('dr-open').onclick = () => { renderPanel(); panel.classList.add('on'); };
+			document.getElementById('dr-close').onclick = () => panel.classList.remove('on');
+			addEventListener('keydown', (e) => { if (e.key === 'Escape') panel.classList.remove('on'); });
+
+			const mBox = document.getElementById('dr-models'), cBox = document.getElementById('dr-clips');
+			const st = document.getElementById('dr-st'), autoBtn = document.getElementById('dr-auto');
+			ALIVE.forEach((m) => {
+				const b = document.createElement('button');
+				b.textContent = m.name; b.onclick = () => setModel(m); mBox.appendChild(b); m.btn = b;
+			});
+			function setModel(m) {
+				cur.group.visible = false;
+				if (cur.actions) Object.values(cur.actions).forEach((x) => x.stop());
+				cur = m; m.group.visible = true; clip = m.clips[0];
+				planAt = -1;
+				ALIVE.forEach((x) => x.btn.classList.toggle('dr-on', x === m));
+				// у маскота кадр ближе: он без тела и мельче остальных
+				camWant = new THREE.Vector3(...(m.cam || [0, 1.7, 5.2]));
+				lookWant = new THREE.Vector3(...(m.look || [0, 1.2, 0]));
+				cBox.innerHTML = '';
+				m.clips.forEach((c) => {
+					const b = document.createElement('button');
+					b.textContent = c; b.dataset.c = c;
+					b.onclick = () => { auto = false; paintAuto(); prevClip = clip; switchBeat = lastBeat; clip = c; applyClip(); };
+					cBox.appendChild(b);
+				});
+				applyClip();
+				renderPlan();
+			}
+			function paintClips() { [...cBox.children].forEach((b) => b.classList.toggle('dr-on', b.dataset.c === clip)); }
+			function paintAuto() { autoBtn.classList.toggle('dr-on', auto); }
+			/* Клип подгоняется под сетку: длина растягивается до ближайшего целого
+			   числа долей, тогда петля садится на такт и не уползает. */
+			function applyClip() {
+				paintClips();
+				if (!cur.actions) return;
+				Object.values(cur.actions).forEach((x) => x.fadeOut(.25));
+				const ac = cur.actions[clip];
+				if (!ac) return;
+				const d = ac.getClip().duration;
+				const beats = Math.max(1, Math.round(d / beatDur()));
+				ac.timeScale = d / (beats * beatDur());
+				ac.reset().fadeIn(.25).play();
+			}
+			autoBtn.onclick = () => { auto = !auto; planAt = -1; paintAuto(); };
+			document.getElementById('dr-play').onclick = (e) => {
+				playing = !playing;
+				if (playing) { audio.play().catch(() => {}); e.target.textContent = '♫ ❚❚ pause'; }
+				else { audio.pause(); e.target.textContent = '♫ ▶ play'; }
+			};
+
+			const pose = G.emptyHead(), follow = G.makeFollower();
+			const clock = new THREE.Clock();
+			let el = 0, gain = 0, earP = 0, earV = 0, blinkAt = 2.4, blinkT = -1, lastBeat = 0;
+			let camWant = null, lookWant = null;
+			setModel(ALIVE[0]);
+			cam.position.copy(camWant); ctl.target.copy(lookWant); camWant = null;
+			document.getElementById('dr-load').classList.add('done');
+
+			(function tick() {
+				requestAnimationFrame(tick);
+				const dt = Math.min(clock.getDelta(), .1); el += dt;
+				const bt = beatNow();
+				const b = bt ? bt.bf : el * 1.6;
+				lastBeat = b;
+				if (bt && auto) followPlan(bt);
+				const want = bt ? G.LEVEL_GAIN[G.shiftLevel(bt.lvl, taste.lift)] * taste.gain : .3 * taste.gain;
+				gain += (want - gain) * (1 - Math.exp(-dt / .4));
+				if (cur.mixer) cur.mixer.update(dt);
+				if (!cur.file) {
+					const u = cur.group.userData;
+					const p = follow(G.headPose(pose, clip, prevClip, b, switchBeat, gain), dt);
+					u.neck.position.y = 1.35 + p.bobY; u.neck.position.z = p.pushZ;
+					u.head.rotation.set(p.nodX, p.turnY, p.rollZ);
+					u.head.scale.set(1 + .085 * p.squash, 1 - .12 * p.squash, 1 + .085 * p.squash);
+					earP += earV * dt; earV += ((p.bobY - earP) * 190 - earV * 15) * dt;
+					const lag = THREE.MathUtils.clamp((p.bobY - earP) * 7, -.9, .9);
+					u.ears.forEach(({ p: pp, s }) => { pp.rotation.x = lag; pp.rotation.z = s * (.15 + p.earExtra) + lag * .3 * s; });
+					u.rings.forEach((r) => r.scale.setScalar(.9 + .25 * Math.max(0, p.squash)));
+					rimA.intensity = 7 + 12 * Math.max(0, p.squash);
+					if (el > blinkAt) { blinkT = 0; blinkAt = el + 2.6 + (el % 2.3); }
+					if (blinkT >= 0) {
+						blinkT += dt;
+						const k = blinkT < .06 ? blinkT / .06 : blinkT < .14 ? 1 - (blinkT - .06) / .08 : 0;
+						u.eyes.forEach((e) => (e.scale.y = 1 - .92 * k));
+						if (blinkT > .14) blinkT = -1;
+					}
+				}
+				// полоса: где играем и какой отрезок следующий
+				const dur = track.duration || 120;
+				const pos = Math.min(1, Math.max(0, audio.currentTime / dur));
+				headEl.style.left = (pos * 100) + '%';
+				let idx = -1;
+				for (let i = 0; i < plan.length; i++) if (audio.currentTime >= plan[i].time) idx = i;
+
+				/* Отсчёт до следующего движения. «Скоро» - это восьмёрка: столько
+				   живёт движение, и раньше предупреждать незачем, а позже уже поздно
+				   готовиться. Порог подхода - два такта. */
+				const nxt = plan[idx + 1];
+				if (nxt && bt) {
+					const beatsLeft = (nxt.time - audio.currentTime) / beatDur();
+					const near = beatsLeft <= 8;
+					countEl.classList.toggle('on', beatsLeft <= 16);
+					countEl.classList.toggle('near', near);
+					countEl.style.left = (pos * 100) + '%';
+					const n = Math.max(1, Math.ceil(beatsLeft));
+					countEl.innerHTML = near
+						? `${n} → <b>${nxt.clip}</b>`
+						: `дальше <b>${nxt.clip}</b>`;
+				} else {
+					countEl.classList.remove('on', 'near');
+				}
+				planEls.forEach((e, i) => {
+					e.classList.toggle('now', i === idx);
+					e.classList.toggle('next', i === idx + 1);
+					e.classList.toggle('soon', i === idx + 1 && !!nxt && bt
+						&& (nxt.time - audio.currentTime) / beatDur() <= 8);
+				});
+				if (flash > 0) flash = Math.max(0, flash - dt * 1.4);
+				st.textContent = bt ? `${flash > 0 ? '⚡ ' : ''}${clip} · такт ${Math.floor(bt.bf / 4)} · ${bt.lvl}→${G.shiftLevel(bt.lvl, taste.lift)}` : 'жми play';
+				st.style.color = flash > 0 ? '#7fe6b4' : '#6d857a';
+				if (camWant) {
+					cam.position.lerp(camWant, 1 - Math.exp(-dt / .3));
+					ctl.target.lerp(lookWant, 1 - Math.exp(-dt / .3));
+					if (cam.position.distanceTo(camWant) < .01) camWant = null;
+				}
+				ctl.update(); rr.render(scene, cam);
+			})();
+			addEventListener('resize', () => {
+				cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); rr.setSize(innerWidth, innerHeight);
+			});
+		</script> </body> </html>
