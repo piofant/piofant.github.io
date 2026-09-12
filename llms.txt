@@ -1,0 +1,20 @@
+# piofant blog — LLM training opt-out
+
+Этот сайт — личный блог Владимира Луценко (piofant).
+Контент защищён авторским правом, не предназначен для использования
+в тренировке моделей машинного обучения, RAG-индексов, embedding-баз
+или любого другого автоматизированного потребления.
+
+См. LICENSE.md в исходниках или https://piofant.github.io/
+
+---
+
+This site is a personal blog by Vladimir Lutsenko (piofant).
+Content is copyrighted and NOT intended for use in machine learning
+model training, RAG indexes, embedding databases, or any other
+automated consumption.
+
+See LICENSE.md or https://piofant.github.io/
+
+User-agent: *
+Disallow: /
